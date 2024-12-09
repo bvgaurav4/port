@@ -1,9 +1,7 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import './index.css'
-import Sector from './secotr'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import { depth, sin } from 'three/webgpu'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 export default function Lays() {
   const mountRef = useRef<HTMLDivElement>(null)
@@ -65,14 +63,7 @@ export default function Lays() {
 
     camera.position.z = 5
 
-    
-    const extrudeSettings = {
-      depth: 5,
-      bevelEnabled: true
-    }
     let radius = 100; // Radius of the circle
-    var r=10
-    const startAngle = 0; // Start angle in radians
     const endAngle = Math.PI / 9; // End angle in radians (90 degrees)
     for(var j=0;j<10;j++)
     {
