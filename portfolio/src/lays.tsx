@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import './index.css'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 export default function Lays() {
   const mountRef = useRef<HTMLDivElement>(null)
@@ -56,7 +56,7 @@ export default function Lays() {
 
 
 
-    const orbit = new OrbitControls(camera, renderer.domElement)
+    // const orbit = new OrbitControls(camera, renderer.domElement)
     const grid = new THREE.GridHelper(1000, 100)
     scene.add(grid)
 
@@ -132,7 +132,7 @@ export default function Lays() {
     const animate = () => {
       requestAnimationFrame(animate)
       daftMesh.rotation.y += 0.013
-      orbit.update()
+      // orbit.update()
       renderer.render(scene, camera)
     }
     animate()
