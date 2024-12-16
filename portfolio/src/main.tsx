@@ -6,12 +6,8 @@ import Test from './test.tsx'
 createRoot(document.getElementById('root')!).render(
   <StrictMode >
     <div>
-      <Test></Test>
-
-
-    {/* <Lays2></Lays2> */}
-    {/* <Lays></Lays>  */}
-    {/* <Base></Base> */}
+      {/* <Test></Test> */}
+    <Lays></Lays> 
     </div>
   </StrictMode>,
 )
