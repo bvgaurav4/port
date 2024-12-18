@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import './index.css'
 // @import url('https://fonts.cdnfonts.com/css/seven-segment');
-
+// import "./src/assets/blade_runner_arcade_cabinet.glb"
 // import * as CANNON from 'cannon'
 
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
