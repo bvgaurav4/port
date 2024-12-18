@@ -15,7 +15,7 @@ export default function Lays() {
   useEffect(() => {
     const scene = new THREE.Scene()
 
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000)
     const renderer = new THREE.WebGLRenderer()
     const l2=new THREE.AmbientLight(0xffffff, 1)
     scene.add(l2);
@@ -32,11 +32,16 @@ export default function Lays() {
       const daftMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff 
         ,map:daft_texture
       })
-
       const daftMesh = new THREE.Mesh(daft, daftMaterial)
       daftMesh.position.set(0, -10, 0);
       scene.add(daftMesh)
-
+      
+      const geometry = new THREE.ConeGeometry(350, 200, 32 ); 
+      const material = new THREE.MeshBasicMaterial( {color: 0xff00ff} );
+      const cone = new THREE.Mesh(geometry, material );
+      cone.position.set(0, -150, 0);
+      cone.rotateX(Math.PI)
+      scene.add( cone );
       // let a=daftMesh.position.clone();
       // a.add(new THREE.Vector3(0,10,0));
       
@@ -45,33 +50,70 @@ export default function Lays() {
 
 
     const orbit = new OrbitControls(camera, renderer.domElement)
-    const grid = new THREE.GridHelper(1000, 100)
-    scene.add(grid)
+    // const grid = new THREE.GridHelper(1000, 100)
+    // scene.add(grid)
     orbit.enableDamping = false; // For smooth motion
     orbit.dampingFactor = 1;
     orbit.enablePan = true;    // Allow panning
     orbit.enableZoom = true; 
-    let radius = 100; // Radius of the circle
-    const endAngle = Math.PI / 9; // End angle in radians (90 degrees)
 
+    const colors=[0x00ff00,0xffff00,0xFfa000,0xff0000,0xff00ff]
+    // let lol=new THREE.Vector3(0,0,0);
+    // camera.lookAt(lol);
+    // orbit.update()
+var rr=130;
+var freq: THREE.MeshBasicMaterial[][] = Array.from({ length: 8 }, () => []);
+var count=0;
+for(var j=0;j<10;j++)
+{
+  var a2=-Math.PI/2;
+  for(let i = 0; i < 16;i++){
+    const boxGeometry = new THREE.BoxGeometry(rr*Math.PI/10, 5, 10, 20, 20, 1); 
 
-    let lol=new THREE.Vector3(0,0,0);
-    camera.lookAt(lol);
-    orbit.update()
-    for(var j=0;j<10;j++)
-    {
-      let add= 0
-      radius+=25
-      for( var i=0;i<16;i++)
-        {
-          add+=Math.PI/8;
-          const geometry = new THREE.CylinderGeometry( radius-15, radius, 0, 64,1,true,add,endAngle); 
-          const material = new THREE.MeshBasicMaterial( {color: 0xffff00} ); 
-          const cylinder = new THREE.Mesh( geometry, material );
-          cylinder.position.set(0, -15,0 );
-          scene.add( cylinder );
-        }
+    const positionAttribute = boxGeometry.attributes.position;
+
+    for (let i = 0; i < positionAttribute.count; i++) {
+      const x = positionAttribute.getX(i);
+      const z = positionAttribute.getZ(i);
+      const bendAmount =-(x*x+z*z)/200; 
+      positionAttribute.setZ(i, z + bendAmount);
     }
+
+      boxGeometry.attributes.position.needsUpdate = true;
+
+      const material2 = new THREE.MeshBasicMaterial( {color: colors[Math.floor(j / 2)]} )
+      const bentBox = new THREE.Mesh(boxGeometry, material2);
+
+      scene.add(bentBox);
+      freq[i%8].push(material2);
+      // freq[i%8].push(i);
+
+      count++;
+      bentBox.position.set(0,-15,0);
+      bentBox.position.x=rr*Math.cos(i*Math.PI/8);
+      bentBox.position.z=rr*Math.sin(i*Math.PI/8);
+      bentBox.rotation.y-=a2;
+      a2+=Math.PI/8;      
+    }
+    rr+=20;
+    }
+    console.log(count);
+    console.log(freq);
+    // for(var j=0;j<10;j++)
+    // {
+    //   console.log(j,c2[Math.floor(j / 2)]);
+    //   let add= 0
+    //   radius+=25
+    //   for( var i=0;i<16;i++)
+    //     {
+    //       add+=Math.PI/8;
+    //       const geometry = new THREE.CylinderGeometry( radius-15, radius, 0, 64,1,true,add,endAngle); 
+    //       const material = new THREE.MeshBasicMaterial( {color: colors[Math.floor(j / 2)]} ); 
+    //       const cylinder = new THREE.Mesh( geometry, material );
+    //       cylinder.position.set(0, -15,0 );
+    //       scene.add( cylinder );
+    //     }
+    // }
 
     const r=130
     // for(var i =0;i<6;i++)
@@ -83,13 +125,11 @@ export default function Lays() {
     //   capsule.position.set(r*Math.cos(2*i*Math.PI/6),20,r*Math.sin(2*i*Math.PI/6));
     // }
 
-
-
-
-
     //loading  all the arcade machines
 
     const loader = new GLTFLoader();
+
+
       // degree 0
     loader.load( 'src/assets/postapocaliptic_diablo_arcade_machine.glb', function ( gltf ) {
       const model = gltf.scene
@@ -116,12 +156,15 @@ export default function Lays() {
 
       model.add(screenMesh);
 
-      screenContext.fillStyle = 'dark green';
-      screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
-      screenContext.fillStyle = 'white';
-      screenContext.font = '30px Seven Segment';
-      screenContext.fillText('Hi my name is', 180, 130);
-      screenTexture.needsUpdate = true;
+      if(screenContext){
+
+        screenContext.fillStyle = 'dark green';
+        screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
+        screenContext.fillStyle = 'white';
+        screenContext.font = '30px Seven Segment';
+        screenContext.fillText('Hi my name is', 180, 130);
+        screenTexture.needsUpdate = true;
+      }
 
     }, undefined, function ( error ) {
     
@@ -162,12 +205,15 @@ export default function Lays() {
 
       model.add(screenMesh);
 
-      screenContext.fillStyle = 'dark green';
-      screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
-      screenContext.fillStyle = 'white';
-      screenContext.font = '30px Seven Segment';
-      screenContext.fillText('Hi my name is', 180, 130);
-      screenTexture.needsUpdate = true;
+      if(screenContext){
+
+        screenContext.fillStyle = 'dark green';
+        screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
+        screenContext.fillStyle = 'white';
+        screenContext.font = '30px Seven Segment';
+        screenContext.fillText('Hi my name is', 180, 130);
+        screenTexture.needsUpdate = true;
+      }
 
       }, undefined, function ( error ) {
 
@@ -176,11 +222,7 @@ export default function Lays() {
       } );
 
     
-      camera.position.setX((r+30)*Math.cos(2*2*Math.PI/6));
-      camera.position.setZ((r+30)*Math.sin(2*2*Math.PI/6));
-      
-      camera.position.setY(30)
-  
+
     
     //120 degree  
     loader.load( 'src/assets/blade_runner_arcade_cabinet.glb', function ( gltf ) {
@@ -205,12 +247,15 @@ export default function Lays() {
       screenMesh.scale.set(200,200,200)
       model.add(screenMesh);
 
-      screenContext.fillStyle = 'dark green';
-      screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
-      screenContext.fillStyle = 'white';
-      screenContext.font = '30px Seven Segment';
-      screenContext.fillText('Hi my name is', 180, 130);
-      screenTexture.needsUpdate = true;
+      if(screenContext){
+
+        screenContext.fillStyle = 'dark green';
+        screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
+        screenContext.fillStyle = 'white';
+        screenContext.font = '30px Seven Segment';
+        screenContext.fillText('Hi my name is', 180, 130);
+        screenTexture.needsUpdate = true;
+      }
 
 
       
@@ -251,12 +296,15 @@ export default function Lays() {
           screenMesh.rotation.y+=Math.PI/4;
           model.add(screenMesh);
     
-          screenContext.fillStyle = 'dark green';
-          screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
-          screenContext.fillStyle = 'white';
-          screenContext.font = '30px Seven Segment';
-          screenContext.fillText('Hi my name is', 180, 130);
-          screenTexture.needsUpdate = true;
+          if(screenContext){
+
+            screenContext.fillStyle = 'dark green';
+            screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
+            screenContext.fillStyle = 'white';
+            screenContext.font = '30px Seven Segment';
+            screenContext.fillText('Hi my name is', 180, 130);
+            screenTexture.needsUpdate = true;
+          }
     
         }, undefined, function ( error ) {
         
@@ -295,13 +343,15 @@ export default function Lays() {
       screenMesh.rotation.x-=Math.PI/8
 
       model.add(screenMesh);
+      if(screenContext){
 
-      screenContext.fillStyle = 'dark green';
-      screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
-      screenContext.fillStyle = 'white';
-      screenContext.font = '30px Seven Segment';
-      screenContext.fillText('Hi my name is', 180, 130);
-      screenTexture.needsUpdate = true;
+        screenContext.fillStyle = 'dark green';
+        screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
+        screenContext.fillStyle = 'white';
+        screenContext.font = '30px Seven Segment';
+        screenContext.fillText('Hi my name is', 180, 130);
+        screenTexture.needsUpdate = true;
+      }
       
     }, undefined, function ( error ) {
     
@@ -339,13 +389,15 @@ export default function Lays() {
       screenMesh.rotation.x-=Math.PI/8
 
       model.add(screenMesh);
+  if(screenContext){
 
-      screenContext.fillStyle = 'dark green';
-      screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
-      screenContext.fillStyle = 'white';
-      screenContext.font = '30px Seven Segment';
-      screenContext.fillText('Hi my name is', 180, 130);
-      screenTexture.needsUpdate = true;
+    screenContext.fillStyle = 'dark green';
+    screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
+    screenContext.fillStyle = 'white';
+    screenContext.font = '30px Seven Segment';
+    screenContext.fillText('Hi my name is', 180, 130);
+    screenTexture.needsUpdate = true;
+  }
     }, undefined, function ( error ) {
     
       console.error( error );
@@ -353,31 +405,54 @@ export default function Lays() {
     } );
 
 
-
+//making flight path
 
 
 function flight_path(){
-  const    [x,y,z]=Array(3).fill().map(()=> THREE.MathUtils.randFloatSpread(1000));
+  const    [x,y,z]=Array(3).fill(null).map(()=> THREE.MathUtils.randFloatSpread(1000));
   return new THREE.Vector3(x,10+Math.abs(y),z);
   }
-var lol_flight_path =Array(20).fill().map(flight_path)
+var lol_flight_path =Array(10).fill(null).map(flight_path)
+console.log(lol_flight_path)
+
+
+camera.position.setX(400)
+camera.position.setY(40)
+
+
+// var lol_flight_path =[new THREE.Vector3(10,0,0),new THREE.Vector3(0,100,100)]
+
+lol_flight_path.push(lol_flight_path[0]);
 
 const path = new THREE.CatmullRomCurve3(lol_flight_path);
 const pathPoints = path.getPoints(100);
 const pathGeometry = new THREE.BufferGeometry().setFromPoints(pathPoints);
 const pathMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
 const pathLine = new THREE.Line(pathGeometry, pathMaterial);
-// scene.add(pathLine);  
+scene.add(pathLine);  
 
 // Sword fish
 loader.load('src/assets/swordfish_ll.glb', function (gltf) {
   const model = gltf.scene;
   
   model.scale.set(200, 200, 200);
-  model.position.set(-100, 50, 0);
-  // scene.add(model);
+  model.position.set(10, 0, 0);
+
+  console.log(path.getTangentAt(0.3));
+  console.log(Math.atan(path.getTangentAt(0.3).y))
+
+
+
+
+  // model.rotation.y = Math.atan2(200, 100);
+  scene.add(model);
+  // model.rotateX(-Math.PI/5);
+  // model.rotateY(Math.PI)
+  // model.rotateZ(Math.PI/2);
+
+
   let progress = 0; 
-  const speed = 0.0002; 
+  const speed = 0.0005; 
 
 
   function animate() {
@@ -388,6 +463,14 @@ loader.load('src/assets/swordfish_ll.glb', function (gltf) {
   
     const tangent = path.getTangentAt(progress);
     model.rotation.y = Math.atan2(tangent.x, tangent.z);
+    // console.log(tangent.x,tangent.z);
+    // model.rotation.y= Math.atan2(tangent.x, tangent.z);
+    // model.rotation.x=(-Math.atan(tangent.y));
+    // model.rotation.y=(Math.atan(tangent.x));
+    model.rotation.z=(Math.atan(tangent.x));
+    model.rotation.y =Math.atan2(tangent.x, tangent.z);
+
+    
     renderer.render(scene, camera);
 
     requestAnimationFrame(animate);
@@ -399,27 +482,64 @@ loader.load('src/assets/swordfish_ll.glb', function (gltf) {
   console.error(error);
 });
 
-//adding stars
+// adding stars
 
-    // function add_starts(){
-    //     const sphere= new THREE.SphereGeometry(0.25,24,24)
-    //     const sphere_mesh=new THREE.MeshStandardMaterial({color:0xffffff})
-    //     const star=new THREE.Mesh(sphere,sphere_mesh);
-    //     const [x,y,z]=Array(3).fill().map(()=> THREE.MathUtils.randFloatSpread(1000));
-    //     star.position.set(x,Math.abs(y),z);
-    //     scene.add(star)
-    //     }
-    //     Array(2000).fill().forEach(add_starts)
+    function add_starts(){
+        const sphere= new THREE.SphereGeometry(0.25,24,24)
+        const sphere_mesh=new THREE.MeshStandardMaterial({color:0xffffff})
+        const star=new THREE.Mesh(sphere,sphere_mesh);
+        const [x,y,z]=Array(3).fill(null).map(()=> THREE.MathUtils.randFloatSpread(1000));
+        star.position.set(x,Math.abs(y),z);
+        scene.add(star)
+        }
+        Array(2000).fill(null).forEach(add_starts)
 
 
-// const geometry = new THREE.CapsuleGeometry( 10, 10, 40, 80 ); 
-// const material = new THREE.MeshBasicMaterial( {color: 0x00ff00} ); 
-// const capsule = new THREE.Mesh( geometry, material ); scene.add( capsule );
+    const listener = new THREE.AudioListener();
+    camera.add( listener );
+    
+    const sound = new THREE.Audio( listener );
+    
+    const audioLoader = new THREE.AudioLoader();
+    audioLoader.load( 'src/assets/Way Down We Go.mp3', function( buffer ) {
+      sound.setBuffer( buffer );
+      sound.setLoop(true);
+      sound.setVolume(0.3);
+      sound.play();
+    });
+    
+    const analyser = new THREE.AudioAnalyser( sound, 32 );
     const animate = () => {
       requestAnimationFrame(animate)
       daftMesh.rotation.y += 0.013
-      // camera.lookAt(40,50,0);
 
+      var a=analyser.getFrequencyData();
+      var condence=[];
+      console.log(a.length)
+      for(var i=0;i<a.length/2;i++)
+        {
+          // var sum=Math.max(a[2*i],a[2*i+1]);
+          var sum=a[2*i]+a[2*i+1];
+
+          condence.push(sum);
+        }
+        console.log(condence)
+      for(var i=0;i<condence.length;i++)
+        {
+          var sum=condence[i];
+              for(var j=0;j<20;j++)
+              {
+                sum-=20
+                if(sum>0)
+                {
+                  console.log(Math.floor(i),j,i);
+                  freq[Math.floor(i)][j].color.set(colors[Math.floor(j/4)]);
+                }else{
+                  console.log(Math.floor(i),j,i);
+                  freq[Math.floor(i)][j].color.set(0x000000);
+                }
+              }
+        }
       orbit.update()
       renderer.render(scene, camera)
     }
@@ -439,9 +559,5 @@ loader.load('src/assets/swordfish_ll.glb', function (gltf) {
     }
   }, [])
   return <div ref={mountRef}>
-        {/* <audio    ref={audioRef} loop>
-        <source src="src/assets/Doin it Right (Official Audio).mp3" type="audio/mpeg" />
-    </audio> */}
-
   </div>
 }
