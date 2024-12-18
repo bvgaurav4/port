@@ -1,8 +1,6 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
-import './index.css'
 // @import url('https://fonts.cdnfonts.com/css/seven-segment');
-// import "./src/assets/blade_runner_arcade_cabinet.glb"
 // import * as CANNON from 'cannon'
 
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -27,7 +25,7 @@ export default function Lays() {
     if (mountRef.current) {
       mountRef.current.appendChild(renderer.domElement)
     }
-      const daft_texture= new THREE.TextureLoader().load("src/assets/Daft_Punk_-_Random_Access_Memories.jpg")
+      const daft_texture= new THREE.TextureLoader().load("public/assets/Daft_Punk_-_Random_Access_Memories.jpg")
       const daft = new THREE.CylinderGeometry(110, 110, 5,64)
       const daftMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff 
         ,map:daft_texture
@@ -131,7 +129,7 @@ for(var j=0;j<10;j++)
 
 
       // degree 0
-    loader.load( 'src/assets/postapocaliptic_diablo_arcade_machine.glb', function ( gltf ) {
+    loader.load( 'public/assets/postapocaliptic_diablo_arcade_machine.glb ', function ( gltf ) {
       const model = gltf.scene
       model.scale.set(20, 20, 20) 
       model.position.set(0,20,0)
@@ -179,7 +177,7 @@ for(var j=0;j<10;j++)
 //degree 60
 
 
-      loader.load( 'src/assets/final_fight_arcade.glb', function ( gltf ) {
+      loader.load( 'public/assets/final_fight_arcade.glb', function ( gltf ) {
         const model = gltf.scene
         model.scale.set(20, 20, 20) 
         model.position.set(0,0,0);
@@ -225,7 +223,7 @@ for(var j=0;j<10;j++)
 
     
     //120 degree  
-    loader.load( 'src/assets/blade_runner_arcade_cabinet.glb', function ( gltf ) {
+    loader.load( 'public/assets/blade_runner_arcade_cabinet.glb', function ( gltf ) {
       const model = gltf.scene
       model.scale.set(0.090, 0.090, 0.090) 
       model.position.x+=r*Math.cos(2*2*Math.PI/6);
@@ -270,7 +268,7 @@ for(var j=0;j<10;j++)
 
 
     //180 degrees
-        loader.load( 'src/assets/arcade_machine (2).glb', function ( gltf ) {
+        loader.load( 'public/assets/arcade_machine (2).glb', function ( gltf ) {
           const model = gltf.scene
           model.scale.set(0.1, 0.1, 0.1) 
           model.position.set(0,20,0);
@@ -315,7 +313,7 @@ for(var j=0;j<10;j++)
 
 
 // 240 degrees
-    loader.load( 'src/assets/arcade_machine__automaping.glb', function ( gltf ) {
+    loader.load( 'public/assets/arcade_machine__automaping.glb', function ( gltf ) {
       const model = gltf.scene
       model.scale.set(10, 10, 10) 
       model.position.set(0,0,0);
@@ -362,7 +360,7 @@ for(var j=0;j<10;j++)
 
 
 // 300 degrees
-    loader.load( 'src/assets/ppl_2.glb', function ( gltf ) {
+    loader.load( 'public/assets/ppl_2.glb', function ( gltf ) {
       const model = gltf.scene
       model.scale.set(24, 24, 24) 
       model.position.set(0,25,0);
@@ -432,7 +430,7 @@ const pathLine = new THREE.Line(pathGeometry, pathMaterial);
 scene.add(pathLine);  
 
 // Sword fish
-loader.load('src/assets/swordfish_ll.glb', function (gltf) {
+loader.load('public/assets/swordfish_ll.glb', function (gltf) {
   const model = gltf.scene;
   
   model.scale.set(200, 200, 200);
@@ -501,10 +499,10 @@ loader.load('src/assets/swordfish_ll.glb', function (gltf) {
     const sound = new THREE.Audio( listener );
     
     const audioLoader = new THREE.AudioLoader();
-    audioLoader.load( 'src/assets/Way Down We Go.mp3', function( buffer ) {
+    audioLoader.load( 'public/assets/Way Down We Go.mp3', function( buffer ) {
       sound.setBuffer( buffer );
       sound.setLoop(true);
-      sound.setVolume(0.3);
+      sound.setVolume(0.9);
       sound.play();
     });
     
