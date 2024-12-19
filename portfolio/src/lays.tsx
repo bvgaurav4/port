@@ -48,8 +48,8 @@ export default function Lays() {
 
 
     const orbit = new OrbitControls(camera, renderer.domElement)
-    // const grid = new THREE.GridHelper(1000, 100)
-    // scene.add(grid)
+    const grid = new THREE.GridHelper(1000, 100)
+    scene.add(grid)
     orbit.enableDamping = false; // For smooth motion
     orbit.dampingFactor = 1;
     orbit.enablePan = true;    // Allow panning
