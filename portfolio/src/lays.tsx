@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import './index.css'
-import jsonData from "./projects"
+import jsonData from "./projects.txt"
 
 
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
