@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
-// @import url('https://fonts.cdnfonts.com/css/seven-segment');
-// import * as CANNON from 'cannon'
+import './index.css'
+import jsonData from "./projects.json"
+
 
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
@@ -9,10 +10,11 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 export default function Lays() {
   const mountRef = useRef<HTMLDivElement>(null)
   const audioRef = useRef<HTMLAudioElement>(null)
-
+  
   useEffect(() => {
     const scene = new THREE.Scene()
-
+    const font = new FontFace('Seven Segment', 'url(/assets/seven-segment/Seven.ttf)');
+    const projects=jsonData.projects
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000)
     const renderer = new THREE.WebGLRenderer()
     const l2=new THREE.AmbientLight(0xffffff, 1)
@@ -39,7 +41,7 @@ export default function Lays() {
       const cone = new THREE.Mesh(geometry, material );
       cone.position.set(0, -150, 0);
       cone.rotateX(Math.PI)
-      scene.add( cone );
+      // scene.add( cone ); 
       // let a=daftMesh.position.clone();
       // a.add(new THREE.Vector3(0,10,0));
       
@@ -50,9 +52,9 @@ export default function Lays() {
     const orbit = new OrbitControls(camera, renderer.domElement)
     const grid = new THREE.GridHelper(1000, 100)
     scene.add(grid)
-    orbit.enableDamping = false; // For smooth motion
+    orbit.enableDamping = false; 
     orbit.dampingFactor = 1;
-    orbit.enablePan = true;    // Allow panning
+    orbit.enablePan = true;    
     orbit.enableZoom = true; 
 
     const colors=[0x00ff00,0xffff00,0xFfa000,0xff0000,0xff00ff]
@@ -61,7 +63,6 @@ export default function Lays() {
     // orbit.update()
 var rr=130;
 var freq: THREE.MeshBasicMaterial[][] = Array.from({ length: 8 }, () => []);
-var count=0;
 for(var j=0;j<10;j++)
 {
   var a2=-Math.PI/2;
@@ -84,9 +85,7 @@ for(var j=0;j<10;j++)
 
       scene.add(bentBox);
       freq[i%8].push(material2);
-      // freq[i%8].push(i);
 
-      count++;
       bentBox.position.set(0,-15,0);
       bentBox.position.x=rr*Math.cos(i*Math.PI/8);
       bentBox.position.z=rr*Math.sin(i*Math.PI/8);
@@ -95,8 +94,6 @@ for(var j=0;j<10;j++)
     }
     rr+=20;
     }
-    console.log(count);
-    console.log(freq);
     // for(var j=0;j<10;j++)
     // {
     //   console.log(j,c2[Math.floor(j / 2)]);
@@ -140,6 +137,7 @@ for(var j=0;j<10;j++)
       const screenCanvas = document.createElement('canvas');
       screenCanvas.width = 1524;
       screenCanvas.height = 1524;
+      screenCanvas.style.borderRadius="200px"
       const screenContext = screenCanvas.getContext('2d');
       const screenTexture = new THREE.CanvasTexture(screenCanvas);
       const screenMaterial = new THREE.MeshBasicMaterial({ map: screenTexture });
@@ -155,12 +153,66 @@ for(var j=0;j<10;j++)
       model.add(screenMesh);
 
       if(screenContext){
+        // screenContext.fillStyle = '';
+        screenContext.fillStyle = 'rgba(0, 0, 0, 0.1) '; 
 
-        screenContext.fillStyle = 'dark green';
         screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
-        screenContext.fillStyle = 'white';
-        screenContext.font = '30px Seven Segment';
-        screenContext.fillText('Hi my name is', 180, 130);
+        screenContext.fillStyle = 'green';
+        screenContext.font = '40px MyCustomFont';
+        var text="Currently pursuing a Bachelor’s in Computer Science at PES University, with a strong passion for software development. Proficient in Java, Python, and C/C++, I have built impactful web applications, machine learning models, and games. Known for problem-solving and quick adaptability, I am eager to bring my skills and enthusiasm to a collaborative development team focused on innovative solutions." 
+        var textarray=text.split(" ")
+        var t2=Array();
+        var count=0;
+        var c2=0;
+        for(var i=0;i<textarray.length;i++)
+        {
+          if((count+textarray[i].length)*30>1524)
+          {
+            c2++;
+            count=0;
+            var str=t2.join(" ")
+            screenContext.fillText(str, 180, 130+c2*55);
+            t2=Array();
+          }else{
+            t2.push(textarray[i]);
+            count+=textarray[i].length;
+          }
+          
+        }
+        var str=t2.join(" ")
+        screenContext.fillText(str, 180, 130+(c2+1)*35);
+        
+
+        const screenCanvas1 = document.createElement('canvas');
+        screenCanvas1.width = 1524;
+        screenCanvas1.height = 1524;
+
+        const screenContext1 = screenCanvas1.getContext('2d');
+        const screenTexture1 = new THREE.CanvasTexture(screenCanvas1);
+        const screenMaterial1 = new THREE.MeshBasicMaterial({ map: screenTexture1 });
+        if(screenContext1!=null)
+        {
+          screenContext1.fillStyle= 'rgba(70, 106, 160, 0.1) '; 
+        }
+        const screenGeometry1 = new THREE.PlaneGeometry(0.5, 0.5);
+        let screenMesh1; 
+        screenMesh1 = new THREE.Mesh(screenGeometry1, screenMaterial1);
+        screenMesh1.position.set(1.2,0.3, 1);
+  
+        screenMesh1.rotation.y+=Math.PI/2
+        model.add(screenMesh1);
+
+        const img = new Image();
+        img.src = '/assets/Daft_Punk_-_Random_Access_Memories.jpg'; 
+        img.onload = () => {
+
+          if(screenContext1){
+            screenContext1.drawImage(img, 0, 0, screenCanvas.width, screenCanvas.height);
+          }
+        
+        };
+
+
         screenTexture.needsUpdate = true;
       }
 
@@ -175,8 +227,6 @@ for(var j=0;j<10;j++)
 
 
 //degree 60
-
-
       loader.load( ' /assets/final_fight_arcade.glb', function ( gltf ) {
         const model = gltf.scene
         model.scale.set(20, 20, 20) 
@@ -187,8 +237,8 @@ for(var j=0;j<10;j++)
         scene.add( model );
 
         const screenCanvas = document.createElement('canvas');
-      screenCanvas.width = 1024;
-      screenCanvas.height = 1024;
+      screenCanvas.width = 1524;
+      screenCanvas.height = 1524;
       const screenContext = screenCanvas.getContext('2d');
       const screenTexture = new THREE.CanvasTexture(screenCanvas);
       const screenMaterial = new THREE.MeshBasicMaterial({ map: screenTexture });
@@ -197,8 +247,6 @@ for(var j=0;j<10;j++)
       let screenMesh; 
       screenMesh = new THREE.Mesh(screenGeometry, screenMaterial);
       screenMesh.position.set(0,1.2, 0.1);
-
-
       screenMesh.rotation.x-=Math.PI/8
 
       model.add(screenMesh);
@@ -208,8 +256,37 @@ for(var j=0;j<10;j++)
         screenContext.fillStyle = 'dark green';
         screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
         screenContext.fillStyle = 'white';
-        screenContext.font = '30px Seven Segment';
-        screenContext.fillText('Hi my name is', 180, 130);
+        screenContext.font = '30px Seven Segment';        
+      if(screenContext){
+        // screenContext.fillStyle = '';
+        screenContext.fillStyle = 'rgba(0, 0, 0, 0.1) '; 
+
+        screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
+        var text="";
+        screenContext.fillStyle = 'green';
+        screenContext.font = '40px MyCustomFont';
+        var textarray=text.split(" ")
+        var t2=Array();
+        var count=0;
+        var c2=0;
+        for(var i=0;i<textarray.length;i++)
+        {
+          if((count+textarray[i].length)*30>1524)
+          {
+            c2++;
+            count=0;
+            var str=t2.join(" ")
+            screenContext.fillText(str, 180, 130+c2*55);
+            t2=Array();
+          }else{
+            t2.push(textarray[i]);
+            count+=textarray[i].length;
+          }
+          
+        }
+        var str=t2.join(" ")
+        screenContext.fillText(str, 180, 130+(c2+1)*35);
+      }
         screenTexture.needsUpdate = true;
       }
 
@@ -231,8 +308,8 @@ for(var j=0;j<10;j++)
       model.rotateY(-1*Math.PI/6)
       scene.add( model );
       const screenCanvas = document.createElement('canvas');
-      screenCanvas.width = 1024;
-      screenCanvas.height = 1024;
+      screenCanvas.width = 1524;
+      screenCanvas.height = 1524;
       const screenContext = screenCanvas.getContext('2d');
       const screenTexture = new THREE.CanvasTexture(screenCanvas);
       const screenMaterial = new THREE.MeshBasicMaterial({ map: screenTexture });
@@ -251,7 +328,38 @@ for(var j=0;j<10;j++)
         screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
         screenContext.fillStyle = 'white';
         screenContext.font = '30px Seven Segment';
-        screenContext.fillText('Hi my name is', 180, 130);
+        
+      if(screenContext){
+        // screenContext.fillStyle = '';
+        screenContext.fillStyle = 'rgba(0, 0, 0, 0.1) '; 
+
+        screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
+        screenContext.fillStyle = 'green';
+        screenContext.font = '40px MyCustomFont';
+        var text="Currently pursuing a Bachelor’s in Computer Science at PES University, with a strong passion for software development. Proficient in Java, Python, and C/C++, I have built impactful web applications, machine learning models, and games. Known for problem-solving and quick adaptability, I am eager to bring my skills and enthusiasm to a collaborative development team focused on innovative solutions." 
+        var textarray=text.split(" ")
+        var t2=Array();
+        var count=0;
+        var c2=0;
+        for(var i=0;i<textarray.length;i++)
+        {
+          if((count+textarray[i].length)*30>1524)
+          {
+            c2++;
+            count=0;
+            var str=t2.join(" ")
+            screenContext.fillText(str, 180, 130+c2*55);
+            t2=Array();
+          }else{
+            t2.push(textarray[i]);
+            count+=textarray[i].length;
+          }
+          
+        }
+        var str=t2.join(" ")
+        screenContext.fillText(str, 180, 130+(c2+1)*35);
+        
+      }
         screenTexture.needsUpdate = true;
       }
 
@@ -279,8 +387,8 @@ for(var j=0;j<10;j++)
           scene.add( model );
 
           const screenCanvas = document.createElement('canvas');
-          screenCanvas.width = 1024;
-          screenCanvas.height = 1024;
+          screenCanvas.width = 1524;
+          screenCanvas.height = 1524;
           const screenContext = screenCanvas.getContext('2d');
           const screenTexture = new THREE.CanvasTexture(screenCanvas);
           const screenMaterial = new THREE.MeshBasicMaterial({ map: screenTexture });
@@ -300,13 +408,49 @@ for(var j=0;j<10;j++)
             screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
             screenContext.fillStyle = 'white';
             screenContext.font = '30px Seven Segment';
-            screenContext.fillText('Hi my name is', 180, 130);
+
+
+
+
+
+
+      
+            if(screenContext){
+              // screenContext.fillStyle = '';
+              screenContext.fillStyle = 'rgba(0, 0, 0, 0.1) '; 
+
+              screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
+              screenContext.fillStyle = 'green';
+              screenContext.font = '40px MyCustomFont';
+              var text="Currently pursuing a Bachelor’s in Computer Science at PES University, with a strong passion for software development. Proficient in Java, Python, and C/C++, I have built impactful web applications, machine learning models, and games. Known for problem-solving and quick adaptability, I am eager to bring my skills and enthusiasm to a collaborative development team focused on innovative solutions." 
+              var textarray=text.split(" ")
+              var t2=Array();
+              var count=0;
+              var c2=0;
+              for(var i=0;i<textarray.length;i++)
+              {
+                if((count+textarray[i].length)*30>1524)
+                {
+                  c2++;
+                  count=0;
+                  var str=t2.join(" ")
+                  screenContext.fillText(str, 180, 130+c2*55);
+                  t2=Array();
+                }else{
+                  t2.push(textarray[i]);
+                  count+=textarray[i].length;
+                }
+                
+              }
+              var str=t2.join(" ")
+              screenContext.fillText(str, 180, 130+(c2+1)*35);
+            }
             screenTexture.needsUpdate = true;
           }
     
         }, undefined, function ( error ) {
         
-          console.error( error );
+          console.error(error );
         
         } );
         
@@ -324,8 +468,8 @@ for(var j=0;j<10;j++)
       model.position.z+=r*Math.sin(2*4*Math.PI/6);
       scene.add( model );
       const screenCanvas = document.createElement('canvas');
-      screenCanvas.width = 1024;
-      screenCanvas.height = 1024;
+      screenCanvas.width = 1524;
+      screenCanvas.height = 1524;
       const screenContext = screenCanvas.getContext('2d');
       const screenTexture = new THREE.CanvasTexture(screenCanvas);
       const screenMaterial = new THREE.MeshBasicMaterial({ map: screenTexture });
@@ -347,7 +491,40 @@ for(var j=0;j<10;j++)
         screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
         screenContext.fillStyle = 'white';
         screenContext.font = '30px Seven Segment';
-        screenContext.fillText('Hi my name is', 180, 130);
+
+
+
+        
+      if(screenContext){
+        // screenContext.fillStyle = '';
+        screenContext.fillStyle = 'rgba(0, 0, 0, 0.1) '; 
+
+        screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
+        screenContext.fillStyle = 'green';
+        screenContext.font = '40px MyCustomFont';
+        var text=jsonData.education
+        var textarray=text.split(" ")
+        var t2=Array();
+        var count=0;
+        var c2=0;
+        for(var i=0;i<textarray.length;i++)
+        {
+          if((count+textarray[i].length)*30>1524)
+          {
+            c2++;
+            count=0;
+            var str=t2.join(" ")
+            screenContext.fillText(str, 180, 130+c2*55);
+            t2=Array();
+          }else{
+            t2.push(textarray[i]);
+            count+=textarray[i].length;
+          }
+          
+        }
+        var str=t2.join(" ")
+        screenContext.fillText(str, 180, 130+(c2+1)*35);
+      }
         screenTexture.needsUpdate = true;
       }
       
@@ -370,8 +547,8 @@ for(var j=0;j<10;j++)
       scene.add( model );
 
       const screenCanvas = document.createElement('canvas');
-      screenCanvas.width = 1024;
-      screenCanvas.height = 1024;
+      screenCanvas.width = 1524;
+      screenCanvas.height = 1524;
       const screenContext = screenCanvas.getContext('2d');
       const screenTexture = new THREE.CanvasTexture(screenCanvas);
       const screenMaterial = new THREE.MeshBasicMaterial({ map: screenTexture });
@@ -393,7 +570,39 @@ for(var j=0;j<10;j++)
     screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
     screenContext.fillStyle = 'white';
     screenContext.font = '30px Seven Segment';
-    screenContext.fillText('Hi my name is', 180, 130);
+
+
+
+    
+    if(screenContext){
+      // screenContext.fillStyle = '';
+      screenContext.fillStyle = 'rgba(0, 0, 0, 0.1) '; 
+
+      screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
+      screenContext.fillStyle = 'green';
+      screenContext.font = '40px MyCustomFont';
+      var textarray=["Email : "+jsonData.email,"Contact Number :"+jsonData.phone_number,"Git :"+jsonData.git];
+      var t2=Array();
+      var count=0;
+      var c2=0;
+      for(var i=0;i<textarray.length;i++)
+      {
+        if((count+textarray[i].length)*30>1524)
+        {
+          c2++;
+          count=0;
+          var str=t2.join(" ")
+          screenContext.fillText(str, 180, 130+c2*60);
+          t2=Array();
+        }else{
+          t2.push(textarray[i]);
+          count+=textarray[i].length;
+        }
+        
+      }
+      var str=t2.join(" ")
+      screenContext.fillText(str, 180, 130+(c2+1)*35);
+    }
     screenTexture.needsUpdate = true;
   }
     }, undefined, function ( error ) {
@@ -411,7 +620,6 @@ function flight_path(){
   return new THREE.Vector3(x,10+Math.abs(y),z);
   }
 var lol_flight_path =Array(10).fill(null).map(flight_path)
-console.log(lol_flight_path)
 
 
 camera.position.setX(400)
@@ -427,7 +635,7 @@ const pathPoints = path.getPoints(100);
 const pathGeometry = new THREE.BufferGeometry().setFromPoints(pathPoints);
 const pathMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
 const pathLine = new THREE.Line(pathGeometry, pathMaterial);
-scene.add(pathLine);  
+// scene.add(pathLine);  
 
 // Sword fish
 loader.load(' /assets/swordfish_ll.glb', function (gltf) {
@@ -436,17 +644,11 @@ loader.load(' /assets/swordfish_ll.glb', function (gltf) {
   model.scale.set(200, 200, 200);
   model.position.set(10, 0, 0);
 
-  console.log(path.getTangentAt(0.3));
-  console.log(Math.atan(path.getTangentAt(0.3).y))
 
 
 
-
-  // model.rotation.y = Math.atan2(200, 100);
   scene.add(model);
-  // model.rotateX(-Math.PI/5);
-  // model.rotateY(Math.PI)
-  // model.rotateZ(Math.PI/2);
+
 
 
   let progress = 0; 
@@ -468,7 +670,6 @@ loader.load(' /assets/swordfish_ll.glb', function (gltf) {
     model.rotation.z=(Math.atan(tangent.x));
     model.rotation.y =Math.atan2(tangent.x, tangent.z);
 
-    
     renderer.render(scene, camera);
 
     requestAnimationFrame(animate);
@@ -499,7 +700,7 @@ loader.load(' /assets/swordfish_ll.glb', function (gltf) {
     const sound = new THREE.Audio( listener );
     
     const audioLoader = new THREE.AudioLoader();
-    audioLoader.load( ' /assets/Doin it Right (Official Audio).mp3', function( buffer ) {
+    audioLoader.load( ' /assets/Two Feet - Go Fck Yourself.mp3', function( buffer ) {
       sound.setBuffer( buffer );
       sound.setLoop(true);
       sound.setVolume(0.9);
@@ -513,7 +714,6 @@ loader.load(' /assets/swordfish_ll.glb', function (gltf) {
 
       var a=analyser.getFrequencyData();
       var condence=[];
-      console.log(a.length)
       for(var i=0;i<a.length/2;i++)
         {
           // var sum=Math.max(a[2*i],a[2*i+1]);
@@ -521,7 +721,6 @@ loader.load(' /assets/swordfish_ll.glb', function (gltf) {
 
           condence.push(sum);
         }
-        console.log(condence)
       for(var i=0;i<condence.length;i++)
         {
           var sum=condence[i];
@@ -530,10 +729,8 @@ loader.load(' /assets/swordfish_ll.glb', function (gltf) {
                 sum-=20
                 if(sum>0)
                 {
-                  console.log(Math.floor(i),j,i);
                   freq[Math.floor(i)][j].color.set(colors[Math.floor(j/4)]);
                 }else{
-                  console.log(Math.floor(i),j,i);
                   freq[Math.floor(i)][j].color.set(0x000000);
                 }
               }

@@ -5,8 +5,11 @@ import './index.css'
 createRoot(document.getElementById('root')!).render(
   <StrictMode >
     <div>
-      {/* <Test></Test> */}
     <Lays></Lays> 
+    {/* <body>
+
+    <h1 >hello my name is </h1>
+    </body> */}
     </div>
   </StrictMode>,
 )
