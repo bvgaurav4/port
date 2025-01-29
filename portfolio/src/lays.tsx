@@ -13,8 +13,8 @@ export default function Lays() {
   
   useEffect(() => {
     const scene = new THREE.Scene()
-    const font = new FontFace('Seven Segment', 'url(/assets/seven-segment/Seven.ttf)');
-    const projects=jsonData.projects
+    // const font = new FontFace('Seven Segment', 'url(/assets/seven-segment/Seven.ttf)');
+    // const projects=jsonData.projects
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000)
     const renderer = new THREE.WebGLRenderer()
     const l2=new THREE.AmbientLight(0xffffff, 1)
@@ -631,10 +631,10 @@ camera.position.setY(40)
 lol_flight_path.push(lol_flight_path[0]);
 
 const path = new THREE.CatmullRomCurve3(lol_flight_path);
-const pathPoints = path.getPoints(100);
-const pathGeometry = new THREE.BufferGeometry().setFromPoints(pathPoints);
-const pathMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
-const pathLine = new THREE.Line(pathGeometry, pathMaterial);
+// const pathPoints = path.getPoints(100);
+// const pathGeometry = new THREE.BufferGeometry().setFromPoints(pathPoints);
+// const pathMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
+// const pathLine = new THREE.Line(pathGeometry, pathMaterial);
 // scene.add(pathLine);  
 
 // Sword fish
