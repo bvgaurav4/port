@@ -700,7 +700,7 @@ loader.load(' /assets/swordfish_ll.glb', function (gltf) {
     const sound = new THREE.Audio( listener );
     
     const audioLoader = new THREE.AudioLoader();
-    audioLoader.load( ' /assets/Two Feet - Go Fck Yourself.mp3', function( buffer ) {
+    audioLoader.load( '/assets/Way Down We Go.mp3', function( buffer ) {
       sound.setBuffer( buffer );
       sound.setLoop(true);
       sound.setVolume(0.9);
