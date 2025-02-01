@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import './index.css'
-import jsonString from "./projects.txt?raw"
+import jsonString from "/assets/projects.txt?raw"
 
 
 
