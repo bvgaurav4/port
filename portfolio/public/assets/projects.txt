@@ -1,4 +1,6 @@
 {
+  "intro":"I am a Computer Science undergraduate at PES University with a deep passion for software development and problem-solving. Proficient in Java, Python, and C/C++, I have developed web applications, machine learning models, and games that address real-world challenges. My ability to quickly adapt to new technologies, combined with strong analytical thinking, allows me to tackle complex problems efficiently. I thrive in collaborative environments where I can contribute innovative solutions while continuously learning and refining my skills. Eager to work with forward-thinking teams, I am committed to building impactful and scalable software solutions.",
+
   "projects": [
     {
       "title": "Multiplayer Game Server",
