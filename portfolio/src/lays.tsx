@@ -11,35 +11,32 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 export default function Lays() {
   const mountRef = useRef<HTMLDivElement>(null)
   const audioRef = useRef<HTMLAudioElement>(null)
-  var models=Array();
-
-  const textrender =(text,width)=>{
-    var textarray=text.split(" ")
-    var t2=Array();
-    var t3=Array();
-    var count=0;
-    var c2=0;
-    for(var i=0;i<textarray.length;i++)
-    {
-      if((count+textarray[i].length)*width>1524)
-      {
-        c2++;
-        count=0;
-        var str=t2.join(" ")
-        t2=Array();
-        t3.push(str);
-      }else{
-        t2.push(textarray[i]);
-        count+=textarray[i].length;
+  const textrender =(text:string ,width: number)=>{
+  var textarray=text.split(" ")
+  var t2=Array();
+  var t3=Array();
+  var count=0;
+  var c2=0;
+  for(var i=0;i<textarray.length;i++) {
+    if((count+textarray[i].length)*width>1524) {
+      c2++;
+      count=0;
+      var str=t2.join(" ")
+      t2=Array();
+      t3.push(str);
+      } else {
+      t2.push(textarray[i]);
+      count+=textarray[i].length;
       }
     }
     var str=t2.join(" ")
     t3.push(str)
     return t3
-  }
+    }
 
 
   useEffect(() => {
+    var models=Array();
     const jsonData=JSON.parse(jsonString);
     const scene = new THREE.Scene()
     const raycaster = new THREE.Raycaster();
@@ -47,7 +44,6 @@ export default function Lays() {
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000)
     const renderer = new THREE.WebGLRenderer()
     const l2=new THREE.AmbientLight(0xffffff, 1)
-    let model1=null;
     scene.add(l2);
     camera.position.setX(200)
     camera.position.setZ(100)
@@ -59,37 +55,37 @@ export default function Lays() {
     const control=point1.clone();
     control.x+=100
     control.z+=100
-    const curve = new THREE.QuadraticBezierCurve3(point1, control, point2);
-    const curvePoints = curve.getPoints(150); 
-    const geometry1 = new THREE.BufferGeometry().setFromPoints(curvePoints);
-    const material1 = new THREE.LineBasicMaterial({ color: 0xff0000 });
-    const curveObject = new THREE.Line(geometry1, material1);
+    let curve = new THREE.QuadraticBezierCurve3(point1, control, point2);
+    let curvePoints = curve.getPoints(150); 
+    let geometry1 = new THREE.BufferGeometry().setFromPoints(curvePoints);
+    let material1 = new THREE.LineBasicMaterial({ color: 0xff0000 });
+    let curveObject = new THREE.Line(geometry1, material1);
     scene.add(curveObject)
 
 
 
       
-      const container=(x: number,z: number,sx:number,sy:number,sz:number)=>{
-            const geometry = new THREE.BoxGeometry(sx, sy, sz);
-            const material = new THREE.MeshBasicMaterial({ color: 0xFFFFFF, wireframe: true }); // Green wireframe box
-          //   const material = new THREE.MeshBasicMaterial({ 
-          //     color: 0x000000, 
-          //     wireframe: true, 
-          //     transparent: true, 
-          //     opacity: 0.5 // Adjust transparency (0 = fully transparent, 1 = fully opaque)
-          // });
-            const cube = new THREE.Mesh(geometry, material);
-            cube.position.set(0,25,0)
-            cube.position.x+=x;
-            cube.position.z+=z;
-            return cube;
-      }
+    const container=(x: number,z: number,sx:number,sy:number,sz:number)=>{
+      const geometry = new THREE.BoxGeometry(sx, sy, sz);
+      const material = new THREE.MeshBasicMaterial({ color: 0xFFFFFF, wireframe: true }); // Green wireframe box
+      //   const material = new THREE.MeshBasicMaterial({ 
+      //     color: 0x000000, 
+      //     wireframe: true, 
+      //     transparent: true, 
+      //     opacity: 0.5 // Adjust transparency (0 = fully transparent, 1 = fully opaque)
+      // });
+        const cube = new THREE.Mesh(geometry, material);
+        cube.position.set(0,25,0)
+        cube.position.x+=x;
+        cube.position.z+=z;
+        return cube;
+        }
 
 
     renderer.setSize(window.innerWidth, window.innerHeight)
     if (mountRef.current) {
       mountRef.current.appendChild(renderer.domElement)
-    }
+      }
       const daft_texture= new THREE.TextureLoader().load(" /assets/Daft_Punk_-_Random_Access_Memories.jpg")
       const daft = new THREE.CylinderGeometry(110, 110, 5,64)
       const daftMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff 
@@ -99,20 +95,28 @@ export default function Lays() {
       daftMesh.position.set(0, -10, 0);
       scene.add(daftMesh)
       
-      
-
-
-      
-          const handleClick=(event)=>{
+          const handleClick=(event: { clientX: number; clientY: number; })=>{
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
       
             raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObject(model1);
-            console.log("ok");
-            if (intersects.length > 0) {
-              console.log('Button clicked!');
+            for(var obj=0;obj<models.length;obj++)
+            {
+              const intersects = raycaster.intersectObject(models[obj][0]);
+              if (intersects.length > 0) {
+                console.log('Button clicked!',models[obj]);
+                var point1=camera.position.clone();
+                var point2= new THREE.Vector3(models[obj][1]['x'],models[obj][1]['y'],models[obj][1]['z'])
+                curve = new THREE.QuadraticBezierCurve3(point1, control, point2);
+                curvePoints = curve.getPoints(150); 
+                geometry1 = new THREE.BufferGeometry().setFromPoints(curvePoints);
+                material1 = new THREE.LineBasicMaterial({ color: 0xff0000 });
+                curveObject = new THREE.Line(geometry1, material1);
+                scene.add(curveObject)
+                progress=0;
+              }
             }
+
           }
     const orbit = new OrbitControls(camera, renderer.domElement)
     const grid = new THREE.GridHelper(1000, 100)
@@ -169,8 +173,11 @@ export default function Lays() {
               const cube =container(r*Math.cos(2*0*Math.PI/6),r*Math.sin(2*0*Math.PI/6),15,35,15);
               scene.add(cube)
 
-              model1=cube;
-              models.push(cube)
+              const pos={ "x":10,"y":10,"z":10};
+              const lookat={"x":0,"y":0,"z":0};
+              var temp=Array();
+              temp.push(cube,pos,lookat);
+              models.push(temp)
               model.scale.set(20, 20, 20) 
 
               model.position.set(0,20,0)
@@ -226,8 +233,13 @@ export default function Lays() {
         //degree 60
               loader.load( ' /assets/final_fight_arcade.glb', function ( gltf ) {
                 const model = gltf.scene
-              models.push(model)
-
+                const cube=container(r*Math.cos(2*1*Math.PI/6),r*Math.sin(2*1*Math.PI/6),15,35,15)
+                const pos={ "x":10,"y":10,"z":10};
+                const lookat={"x":0,"y":0,"z":0};
+                var temp=Array();
+                temp.push(cube,pos,lookat);
+                models.push(temp)                
+                scene.add(cube)
                 model.scale.set(20, 20, 20) 
                 model.position.set(0,0,0);
                 model.position.x+=r*Math.cos(2*1*Math.PI/6);
@@ -301,8 +313,13 @@ export default function Lays() {
             //120 degree  
             loader.load( ' /assets/blade_runner_arcade_cabinet.glb', function ( gltf ) {
               const model = gltf.scene
-              models.push(model)
-
+              const cube=container(r*Math.cos(2*2*Math.PI/6),r*Math.sin(2*2*Math.PI/6),15,35,15)
+                            const pos={ "x":10,"y":10,"z":10};
+              const lookat={"x":0,"y":0,"z":0};
+              var temp=Array();
+              temp.push(cube,pos,lookat);
+              models.push(temp)              
+              scene.add(cube)
               model.scale.set(0.090, 0.090, 0.090) 
               model.position.x+=r*Math.cos(2*2*Math.PI/6);
               model.position.z+=r*Math.sin(2*2*Math.PI/6);
@@ -379,13 +396,20 @@ export default function Lays() {
             //180 degrees
             loader.load( ' /assets/arcade_machine__automaping.glb', function ( gltf ) {
               const model = gltf.scene
-              models.push(model)
 
               model.scale.set(10, 10, 10) 
               model.position.set(0,0,0);
               model.rotateY(-Math.PI/2)
               model.position.x+=r*Math.cos(2*3*Math.PI/6);
               model.position.z+=r*Math.sin(2*3*Math.PI/6);
+
+              const cube=container(r*Math.cos(2*3*Math.PI/6),r*Math.sin(2*3*Math.PI/6),15,35,15)
+                            const pos={ "x":10,"y":10,"z":10};
+              const lookat={"x":0,"y":0,"z":0};
+              var temp=Array();
+              temp.push(cube,pos,lookat);
+              models.push(temp)              
+              scene.add(cube)
 
               // scene.add( model );
               const screenCanvas = document.createElement('canvas');
@@ -459,7 +483,6 @@ export default function Lays() {
             // 240 degrees    
             loader.load( ' /assets/arcade_machine (2).glb', function ( gltf ) {
               const model = gltf.scene
-              models.push(model)
 
               model.scale.set(0.1, 0.1, 0.1) 
               model.position.set(0,20,0);
@@ -468,8 +491,13 @@ export default function Lays() {
               model.position.z+=r*Math.sin(2*4*Math.PI/6);
               model.rotateY(Math.PI/4);
               model.rotateY(2*Math.PI/3)
-
-              // scene.add( model );
+              const cube=container(r*Math.cos(2*4*Math.PI/6),r*Math.sin(2*4*Math.PI/6),15,35,15)
+                            const pos={ "x":10,"y":10,"z":10};
+              const lookat={"x":0,"y":0,"z":0};
+              var temp=Array();
+              temp.push(cube,pos,lookat);
+              models.push(temp)              // scene.add( model );
+              scene.add(cube)
 
               const screenCanvas = document.createElement('canvas');
               screenCanvas.width = 1524;
@@ -546,13 +574,20 @@ export default function Lays() {
         loader.load( ' /assets/blade_runner_arcade_cabinet.glb', function ( gltf ) {
 
           const model = gltf.scene
-          models.push(model)
 
           model.scale.set(0.090, 0.090, 0.090) 
           model.position.x+=r*Math.cos(5*2*Math.PI/6);
           model.position.z+=r*Math.sin(5*2*Math.PI/6);
-          model.rotateY(-7*Math.PI/6)
+          const cube=container(r*Math.cos(5*2*Math.PI/6),r*Math.sin(5*2*Math.PI/6),15,35,15)
+                        const pos={ "x":10,"y":10,"z":10};
+              const lookat={"x":0,"y":0,"z":0};
+              var temp=Array();
+              temp.push(cube,pos,lookat);
+              models.push(temp)         
+               model.rotateY(-7*Math.PI/6)
           // scene.add( model );
+              scene.add(cube)
+
           const screenCanvas = document.createElement('canvas');
           screenCanvas.width = 1524;
           screenCanvas.height = 1524;
