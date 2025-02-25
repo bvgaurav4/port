@@ -10,7 +10,6 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 export default function Lays() {
   const mountRef = useRef<HTMLDivElement>(null)
-  const audioRef = useRef<HTMLAudioElement>(null)
   const textrender =(text:string ,width: number)=>{
   var textarray=text.split(" ")
   var t2=Array();
@@ -726,7 +725,7 @@ export default function Lays() {
           sound.setBuffer( buffer );
           sound.setLoop(true);
           sound.setVolume(0.9);
-          // sound.play();
+          sound.play();
         });
             
         const analyser = new THREE.AudioAnalyser( sound, 32 );
