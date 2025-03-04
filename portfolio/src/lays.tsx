@@ -2,12 +2,13 @@ import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import './index.css'
 import jsonString from "/assets/projects.txt?raw"
-
-
-
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
+import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
+
+
+
 export default function Lays() {
   const mountRef = useRef<HTMLDivElement>(null)
   const textrender =(text:string ,width: number)=>{
@@ -19,9 +20,10 @@ export default function Lays() {
   for(var i=0;i<textarray.length;i++) {
     if((count+textarray[i].length)*width>1524) {
       c2++;
-      count=0;
+      count=textarray[i].length;
       var str=t2.join(" ")
       t2=Array();
+      t2.push(textarray[i]);
       t3.push(str);
       } else {
       t2.push(textarray[i]);
@@ -40,83 +42,130 @@ export default function Lays() {
     const scene = new THREE.Scene()
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000)
     const renderer = new THREE.WebGLRenderer()
     const l2=new THREE.AmbientLight(0xffffff, 1)
     scene.add(l2);
-    camera.position.setX(200)
-    camera.position.setZ(100)
-    camera.position.setY(135)
+
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000)
+    camera.position.setX(150*Math.cos(2*1*Math.PI/6)+5)
+    camera.position.setZ(150*Math.sin(2*1*Math.PI/6)+5)
+    camera.position.setY(35)
 
 
     const point1=new THREE.Vector3(155,35,0)
-    const point2=new THREE.Vector3(155*Math.cos(Math.PI/3),35,155*Math.sin(Math.PI/3))    
+    const point2=new THREE.Vector3(155,35,0)
     const control=point1.clone();
-    control.x+=100
-    control.z+=100
+    control.x+=10
+    control.y+=10
+
     let curve = new THREE.QuadraticBezierCurve3(point1, control, point2);
     let curvePoints = curve.getPoints(150); 
     let geometry1 = new THREE.BufferGeometry().setFromPoints(curvePoints);
     let material1 = new THREE.LineBasicMaterial({ color: 0xff0000 });
     let curveObject = new THREE.Line(geometry1, material1);
     scene.add(curveObject)
-
-
-
       
     const container=(x: number,z: number,sx:number,sy:number,sz:number)=>{
       const geometry = new THREE.BoxGeometry(sx, sy, sz);
-      const material = new THREE.MeshBasicMaterial({ color: 0xFFFFFF, wireframe: true }); // Green wireframe box
-      //   const material = new THREE.MeshBasicMaterial({ 
-      //     color: 0x000000, 
-      //     wireframe: true, 
-      //     transparent: true, 
-      //     opacity: 0.5 // Adjust transparency (0 = fully transparent, 1 = fully opaque)
-      // });
+        const material = new THREE.MeshBasicMaterial({ 
+          color: 0x000000, 
+          wireframe: true, 
+          transparent: true, 
+          opacity: 0 
+      });
         const cube = new THREE.Mesh(geometry, material);
         cube.position.set(0,25,0)
         cube.position.x+=x;
         cube.position.z+=z;
         return cube;
         }
+        // const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+                const makingButtons=(x:number,y:number,z:number,xr:number,yr:number,zr:number,text:string ,h:number,w:number,t:number)=>{
+                      const r=w
+                      const shape = new THREE.Shape();
+                      shape.moveTo(0, 0);
+                      shape.absarc(0, h/2, r, 0 ,Math.PI, false);
+                      shape.lineTo(-w, -h/2);
+                      shape.lineTo(w, -h/2);
+                      shape.absarc(0, -h/2, r, Math.PI, 0, false);
+                      // Extrude the shape
+                      const extrudeSettings = { depth: t*0.01, bevelEnabled: true };
+                      const capsuleGeometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+                      const buttonMaterial = new THREE.MeshPhongMaterial({
+                        // color: new THREE.Color('#982625'),
+                        emissive: new THREE.Color('#9d0302'),
+                        specular: new THREE.Color('#ffffff'),
+                        shininess: 10
+                      });
+                      const capsuleButton = new THREE.Mesh(capsuleGeometry, buttonMaterial);
+                      
+                      // Position the button
+                      capsuleButton.position.set(x,y-0.1,z);
+                      capsuleButton.rotation.set(Math.PI/2,0,Math.PI/3)
+                      // capsuleButton.rotation.set(xr,yr,zr);
+        
+                      scene.add(capsuleButton);
+        
+                  const loader = new FontLoader();
+                  var button=null;
+                  loader.load('https://threejs.org/examples/fonts/helvetiker_bold.typeface.json', function (font) {
+                      const textGeometry = new TextGeometry(text, {
+                          font: font,
+                          size: 0.35,
+                          height: t*0.75,
+                      });
+                      const textMaterial = new THREE.MeshPhongMaterial({
+                        color: new THREE.Color('#982625'),
+                        emissive: new THREE.Color('#9d0302'),
+                        specular: new THREE.Color('#ffffff'),
+                        shininess: 10
+                      });              
+                      const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+                      textMesh.position.set(x-0.3,y,z+0.35);
+                      textMesh.rotation.set(xr,yr,zr);
+                      scene.add(textMesh);
+                      button=textMesh;
+                  });
+                  return button;
+                }
 
     renderer.setSize(window.innerWidth, window.innerHeight)
     if (mountRef.current) {
       mountRef.current.appendChild(renderer.domElement)
       }
-      const daft_texture= new THREE.TextureLoader().load(" /assets/Daft_Punk_-_Random_Access_Memories.jpg")
-      const daft = new THREE.CylinderGeometry(110, 110, 5,64)
-      const daftMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff 
-        ,map:daft_texture
-      })
-      const daftMesh = new THREE.Mesh(daft, daftMaterial)
-      daftMesh.position.set(0, -10, 0);
-      scene.add(daftMesh)
+    const daft_texture= new THREE.TextureLoader().load(" /assets/Daft_Punk_-_Random_Access_Memories.jpg")
+    const daft = new THREE.CylinderGeometry(110, 110, 5,64)
+    const daftMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff 
+      ,map:daft_texture
+    })
+    const daftMesh = new THREE.Mesh(daft, daftMaterial)
+    daftMesh.position.set(0, -10, 0);
+    scene.add(daftMesh)
       
-          const handleClick=(event: { clientX: number; clientY: number; })=>{
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-      
-            raycaster.setFromCamera(mouse, camera);
-            for(var obj=0;obj<models.length;obj++)
-            {
-              const intersects = raycaster.intersectObject(models[obj][0]);
-              if (intersects.length > 0) {
-                console.log('Button clicked!',models[obj]);
-                var point1=camera.position.clone();
-                var point2= new THREE.Vector3(models[obj][1]['x'],models[obj][1]['y'],models[obj][1]['z'])
-                curve = new THREE.QuadraticBezierCurve3(point1, control, point2);
-                curvePoints = curve.getPoints(150); 
-                geometry1 = new THREE.BufferGeometry().setFromPoints(curvePoints);
-                material1 = new THREE.LineBasicMaterial({ color: 0xff0000 });
-                curveObject = new THREE.Line(geometry1, material1);
-                scene.add(curveObject)
-                progress=0;
-              }
-            }
+    const handleClick=(event: { clientX: number; clientY: number; })=>{
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-          }
+      raycaster.setFromCamera(mouse, camera);
+      for(var obj=0;obj<models.length;obj++)
+      {
+        const intersects = raycaster.intersectObject(models[obj][0]);
+        if (intersects.length > 0) {
+          console.log('Button clicked!',models[obj]); 
+          var point1=camera.position.clone();
+          var point2= models[obj][0].position.clone();
+          curve = new THREE.QuadraticBezierCurve3(point1, control, point2);
+          curvePoints = curve.getPoints(150); 
+          geometry1 = new THREE.BufferGeometry().setFromPoints(curvePoints);
+          material1 = new THREE.LineBasicMaterial({ color: 0xff0000 });
+          curveObject = new THREE.Line(geometry1, material1);
+          scene.add(curveObject)
+          progress=0;
+        }
+      }
+
+    }
     const orbit = new OrbitControls(camera, renderer.domElement)
     const grid = new THREE.GridHelper(1000, 100)
     scene.add(grid)
@@ -134,24 +183,18 @@ export default function Lays() {
       var a2=-Math.PI/2;
       for(let i = 0; i < 16;i++){
         const boxGeometry = new THREE.BoxGeometry(rr*Math.PI/10, 5, 10, 20, 20, 1); 
-
         const positionAttribute = boxGeometry.attributes.position;
-
         for (let i = 0; i < positionAttribute.count; i++) {
           const x = positionAttribute.getX(i);
           const z = positionAttribute.getZ(i);
           const bendAmount =-(x*x+z*z)/200; 
           positionAttribute.setZ(i, z + bendAmount);
         }
-
           boxGeometry.attributes.position.needsUpdate = true;
-
           const material2 = new THREE.MeshBasicMaterial( {color: colors[Math.floor(j / 2)]} )
           const bentBox = new THREE.Mesh(boxGeometry, material2);
-
           scene.add(bentBox);
           freq[i%8].push(material2);
-
           bentBox.position.set(0,-15,0);
           bentBox.position.x=rr*Math.cos(i*Math.PI/8);
           bentBox.position.z=rr*Math.sin(i*Math.PI/8);
@@ -160,155 +203,148 @@ export default function Lays() {
         }
         rr+=20;
     }
-            //loading  all the arcade machines
+    //loading  all the arcade machines
             
-            const r=130
-            const loader = new GLTFLoader();
+    const r=130
+    const loader = new GLTFLoader();
 
-              // degree 0
-            loader.load( ' /assets/postapocaliptic_diablo_arcade_machine.glb ', function ( gltf ) {
-              const model = gltf.scene
-            
-              const cube =container(r*Math.cos(2*0*Math.PI/6),r*Math.sin(2*0*Math.PI/6),15,35,15);
-              scene.add(cube)
+    // degree 0
+    loader.load( ' /assets/postapocaliptic_diablo_arcade_machine.glb ', function ( gltf ) {
+      const model = gltf.scene
+    
+      const cube =container(r*Math.cos(2*0*Math.PI/6),r*Math.sin(2*0*Math.PI/6),15,35,15);
+      scene.add(cube)
 
-              const pos={ "x":10,"y":10,"z":10};
-              const lookat={"x":0,"y":0,"z":0};
-              var temp=Array();
-              temp.push(cube,pos,lookat);
-              models.push(temp)
-              model.scale.set(20, 20, 20) 
+      const pos={ "x":10,"y":10,"z":10};
+      const lookat={"x":0,"y":0,"z":0};
+      var temp=Array();
+      temp.push(cube,pos,lookat);
+      models.push(temp)
+      model.scale.set(20, 20, 20) 
 
-              model.position.set(0,20,0)
-              model.position.x+=r*Math.cos(2*0*Math.PI/6);
-              model.position.z+=r*Math.sin(2*0*Math.PI/6);
-              scene.add( model );
+      model.position.set(0,20,0)
+      model.position.x+=r*Math.cos(2*0*Math.PI/6);
+      model.position.z+=r*Math.sin(2*0*Math.PI/6);
+      scene.add( model );
 
-              const screenCanvas = document.createElement('canvas');
-              screenCanvas.width = 1524;
-              screenCanvas.height = 1524;
-              screenCanvas.style.borderRadius="200px"
-              const screenContext = screenCanvas.getContext('2d');
-              const screenTexture = new THREE.CanvasTexture(screenCanvas);
-              const screenMaterial = new THREE.MeshBasicMaterial({ map: screenTexture });
-          
-              const screenGeometry = new THREE.PlaneGeometry(0.5, 0.5);
-              let screenMesh; 
+      const screenCanvas = document.createElement('canvas');
+      screenCanvas.width = 1524;
+      screenCanvas.height = 1524;
+      screenCanvas.style.borderRadius="200px"
+      const screenContext = screenCanvas.getContext('2d');
+      const screenTexture = new THREE.CanvasTexture(screenCanvas);
+      const screenMaterial = new THREE.MeshBasicMaterial({ map: screenTexture });
+  
+      const screenGeometry = new THREE.PlaneGeometry(0.5, 0.5);
+      let screenMesh; 
 
-              screenMesh = new THREE.Mesh(screenGeometry, screenMaterial);
-              screenMesh.position.set(0.2,0.3, 0);
+      screenMesh = new THREE.Mesh(screenGeometry, screenMaterial);
+      screenMesh.position.set(0.2,0.3, 0);
 
-              screenMesh.rotation.y+=Math.PI/2
+      screenMesh.rotation.y+=Math.PI/2
 
-              model.add(screenMesh);
+      model.add(screenMesh);
 
-              if(screenContext){
-                screenContext.fillStyle = 'rgba(0, 0, 0, 0.1) '; 
+      if(screenContext){
+        screenContext.fillStyle = 'rgba(0, 0, 0, 0.1) '; 
 
-                screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
-                screenContext.fillStyle = 'green';
-                screenContext.font = '40px MyCustomFont';
-                var text = textrender(jsonData.intro,30);
-                for(var i =0;i<text.length;i++){
-                  var str=text[i];
-                  screenContext.fillText(str, 180, 130+i*55);
-                }
-                const screenCanvas1 = document.createElement('canvas');
-                screenCanvas1.width = 1524;
-                screenCanvas1.height = 1524;
-                screenTexture.needsUpdate = true;
-              }
+        screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
+        screenContext.fillStyle = 'green';
+        screenContext.font = '40px MyCustomFont';
+        var text = textrender(jsonData.intro,30);
+        for(var i =0;i<text.length;i++){
+          var str=text[i];
+          screenContext.fillText(str, 180, 130+i*55);
+        }
+        const screenCanvas1 = document.createElement('canvas');
+        screenCanvas1.width = 1524;
+        screenCanvas1.height = 1524;
+        screenTexture.needsUpdate = true;
+      }
 
-            }, undefined, function ( error ) {
-            
-              console.error( error );
-            
-            } );
-
-
+    }, undefined, function ( error ) {
+    
+      console.error( error );
+    
+    } );
 
 
 
-        //degree 60
-              loader.load( ' /assets/final_fight_arcade.glb', function ( gltf ) {
-                const model = gltf.scene
-                const cube=container(r*Math.cos(2*1*Math.PI/6),r*Math.sin(2*1*Math.PI/6),15,35,15)
-                const pos={ "x":10,"y":10,"z":10};
-                const lookat={"x":0,"y":0,"z":0};
-                var temp=Array();
-                temp.push(cube,pos,lookat);
-                models.push(temp)                
-                scene.add(cube)
-                model.scale.set(20, 20, 20) 
-                model.position.set(0,0,0);
-                model.position.x+=r*Math.cos(2*1*Math.PI/6);
-                model.position.z+=r*Math.sin(2*1*Math.PI/6);
-                model.rotateY(Math.PI/6)
-                // scene.add( model );
 
-                const screenCanvas = document.createElement('canvas');
-              screenCanvas.width = 1524;
-              screenCanvas.height = 1524;
-              const screenContext = screenCanvas.getContext('2d');
-              const screenTexture = new THREE.CanvasTexture(screenCanvas);
-              const screenMaterial = new THREE.MeshBasicMaterial({ map: screenTexture });
-          
-              const screenGeometry = new THREE.PlaneGeometry(0.5, 0.5);
-              let screenMesh; 
-              screenMesh = new THREE.Mesh(screenGeometry, screenMaterial);
-              screenMesh.position.set(0,1.2, 0.1);
-              screenMesh.rotation.x-=Math.PI/8
 
-              model.add(screenMesh);
+    //degree 60
+    loader.load( '  /assets/arcade_machine (2).glb', function ( gltf ) {
+      const pos={ "x":10,"y":10,"z":10};
+      const lookat={"x":0,"y":0,"z":0};
+      const cube=container(r*Math.cos(2*1*Math.PI/6),r*Math.sin(2*1*Math.PI/6),15,35,15)
+      var temp=Array();
+      models.push(temp)                
+      scene.add(cube)
 
-              if(screenContext){
+      let nextbutton=makingButtons(r*Math.cos(2*1*Math.PI/6)+6.5,24,r*Math.sin(2*1*Math.PI/6)+6.5,-Math.PI/2,0,Math.PI/6,"next",1,0.25,0.2);
+      let prevbutton=makingButtons(r*Math.cos(2*1*Math.PI/6)+3,24,r*Math.sin(2*1*Math.PI/6)+8.4,-Math.PI/2,0,Math.PI/6,"prev",1,0.25,0.2);
 
-                screenContext.fillStyle = 'dark green';
-                screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
-                screenContext.fillStyle = 'white';
-                screenContext.font = '30px Seven Segment';        
-              if(screenContext){
-                // screenContext.fillStyle = '';
-                screenContext.fillStyle = 'rgba(0, 0, 0, 0.1) '; 
+      
+      temp.push(cube,pos,lookat,nextbutton,prevbutton);
+      
+      const model = gltf.scene
 
-                screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
-                var text="";
-                screenContext.fillStyle = 'green';
-                screenContext.font = '40px MyCustomFont';
-                var textarray=text.split(" ")
-                var t2=Array();
-                var count=0;
-                var c2=0;
-                for(var i=0;i<textarray.length;i++)
-                {
-                  if((count+textarray[i].length)*30>1524)
-                  {
-                    c2++;
-                    count=0;
-                    var str=t2.join(" ")
-                    screenContext.fillText(str, 180, 130+c2*55);
-                    t2=Array();
-                  }else{
-                    t2.push(textarray[i]);
-                    count+=textarray[i].length;
-                  }
-                  
-                }
-                var str=t2.join(" ")
-                screenContext.fillText(str, 180, 130+(c2+1)*35);
-              }
-                screenTexture.needsUpdate = true;
-              }
+      model.scale.set(0.1, 0.1, 0.1) 
+      model.position.set(0,23,0);
+      model.position.x+=r*Math.cos(2*1*Math.PI/6);
+      model.position.z+=r*Math.sin(2*1*Math.PI/6);
+      model.rotateY(Math.PI/4);
 
-              }, undefined, function ( error ) {
+      model.rotateY(-Math.PI/3)
+      scene.add( model );
 
-                console.error( error );
+      const screenCanvas = document.createElement('canvas');
+      screenCanvas.width = 1524;
+      screenCanvas.height = 1524;
+      const screenContext = screenCanvas.getContext('2d');
+      const screenTexture = new THREE.CanvasTexture(screenCanvas);
+      const screenMaterial = new THREE.MeshBasicMaterial({ map: screenTexture });
+  
+      const screenGeometry = new THREE.PlaneGeometry(1, 1);
+      let screenMesh; 
 
-              } );
+      screenMesh = new THREE.Mesh(screenGeometry, screenMaterial);
+      screenMesh.position.set(40,70,40);
+      screenMesh.scale.set(150,150,150)
+      screenMesh.rotation.y+=Math.PI/4;
+      model.add(screenMesh);
+
+      if(screenContext){
+
+        screenContext.fillStyle = 'dark green';
+        screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
+        screenContext.fillStyle = 'white';
+        screenContext.font = '40px MyCustomFont';
+        if(screenContext){
+          // screenContext.fillStyle = '';
+          screenContext.fillStyle = 'rgba(0, 0, 0, 0.1) '; 
+
+          screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
+          screenContext.fillStyle = 'green';
+          screenContext.font = '40px MyCustomFont';
+          var text = textrender(jsonData.intro,30);
+          for(var i =0;i<text.length;i++){
+            var str=text[i];
+            screenContext.fillText(str, 180, 130+i*55);
+          }
+        }  
+        screenTexture.needsUpdate = true;
+      }
+
+    }, undefined, function ( error ) {
+
+      console.error( error );
+
+    } );
 
             
 
-            
+             
             //120 degree  
             loader.load( ' /assets/blade_runner_arcade_cabinet.glb', function ( gltf ) {
               const model = gltf.scene
@@ -337,15 +373,14 @@ export default function Lays() {
               screenMesh.position.set(0,360, -8);
               screenMesh.rotation.x-=Math.PI/10;
               screenMesh.scale.set(200,200,200)
-              // model.add(screenMesh);
+              model.add(screenMesh);
 
               if(screenContext){
 
                 screenContext.fillStyle = 'dark green';
                 screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
                 screenContext.fillStyle = 'white';
-                screenContext.font = '30px Seven Segment';
-                
+                screenContext.font = '40px MyCustomFont';                
               if(screenContext){
                 // screenContext.fillStyle = '';
                 screenContext.fillStyle = 'rgba(0, 0, 0, 0.1) '; 
@@ -388,9 +423,6 @@ export default function Lays() {
               
             } );
 
-
-
-
             
             //180 degrees
             loader.load( ' /assets/arcade_machine__automaping.glb', function ( gltf ) {
@@ -410,7 +442,7 @@ export default function Lays() {
               models.push(temp)              
               scene.add(cube)
 
-              // scene.add( model );
+              scene.add( model );
               const screenCanvas = document.createElement('canvas');
               screenCanvas.width = 1524;
               screenCanvas.height = 1524;
@@ -434,7 +466,8 @@ export default function Lays() {
                 screenContext.fillStyle = 'dark green';
                 screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
                 screenContext.fillStyle = 'white';
-                screenContext.font = '30px Seven Segment';
+                // screenContext.font = '30px Seven Segment';
+                screenContext.font = '40px MyCustomFont';
 
 
 
@@ -446,28 +479,15 @@ export default function Lays() {
                 screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
                 screenContext.fillStyle = 'green';
                 screenContext.font = '40px MyCustomFont';
-                var text=jsonData.education
-                var textarray=text.split(" ")
-                var t2=Array();
-                var count=0;
-                var c2=0;
-                for(var i=0;i<textarray.length;i++)
-                {
-                  if((count+textarray[i].length)*30>1524)
-                  {
-                    c2++;
-                    count=0;
-                    var str=t2.join(" ")
-                    screenContext.fillText(str, 180, 130+c2*55);
-                    t2=Array();
-                  }else{
-                    t2.push(textarray[i]);
-                    count+=textarray[i].length;
-                  }
-                  
+                var text = jsonData.education
+                text.push("Phone Number      "+jsonData.phone_number)
+                text.push("enail             "+jsonData.email)
+                text.push("git               "+jsonData.git)
+
+                for(var i =0;i<text.length;i++){
+                  var str=text[i];
+                  screenContext.fillText(str, 180, 130+i*55);
                 }
-                var str=t2.join(" ")
-                screenContext.fillText(str, 180, 130+(c2+1)*35);
               }
                 screenTexture.needsUpdate = true;
               }
@@ -481,21 +501,23 @@ export default function Lays() {
             
             // 240 degrees    
             loader.load( ' /assets/arcade_machine (2).glb', function ( gltf ) {
+              const cube=container(r*Math.cos(2*4*Math.PI/6),r*Math.sin(2*4*Math.PI/6),15,35,15)
+              const pos={ "x":10,"y":10,"z":10};
+              const lookat={"x":0,"y":0,"z":0};
+
               const model = gltf.scene
 
               model.scale.set(0.1, 0.1, 0.1) 
-              model.position.set(0,20,0);
+              model.position.set(0,23,0);
 
               model.position.x+=r*Math.cos(2*4*Math.PI/6);
               model.position.z+=r*Math.sin(2*4*Math.PI/6);
               model.rotateY(Math.PI/4);
               model.rotateY(2*Math.PI/3)
-              const cube=container(r*Math.cos(2*4*Math.PI/6),r*Math.sin(2*4*Math.PI/6),15,35,15)
-                            const pos={ "x":10,"y":10,"z":10};
-              const lookat={"x":0,"y":0,"z":0};
               var temp=Array();
               temp.push(cube,pos,lookat);
-              models.push(temp)              // scene.add( model );
+              models.push(temp)              
+              scene.add( model );
               scene.add(cube)
 
               const screenCanvas = document.createElement('canvas');
@@ -519,14 +541,7 @@ export default function Lays() {
                 screenContext.fillStyle = 'dark green';
                 screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
                 screenContext.fillStyle = 'white';
-                screenContext.font = '30px Seven Segment';
-
-
-
-
-
-
-          
+                screenContext.font = '40px MyCustomFont';          
                 if(screenContext){
                   // screenContext.fillStyle = '';
                   screenContext.fillStyle = 'rgba(0, 0, 0, 0.1) '; 
@@ -566,9 +581,6 @@ export default function Lays() {
             
             } );  
             
-
-
-
         // 300 degrees
         loader.load( ' /assets/blade_runner_arcade_cabinet.glb', function ( gltf ) {
 
@@ -584,7 +596,7 @@ export default function Lays() {
               temp.push(cube,pos,lookat);
               models.push(temp)         
                model.rotateY(-7*Math.PI/6)
-          // scene.add( model );
+          scene.add( model );
               scene.add(cube)
 
           const screenCanvas = document.createElement('canvas');
@@ -607,7 +619,7 @@ export default function Lays() {
             screenContext.fillStyle = 'dark green';
             screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
             screenContext.fillStyle = 'white';
-            screenContext.font = '30px Seven Segment';
+            screenContext.font = '40px MyCustomFont';
             
           if(screenContext){
             // screenContext.fillStyle = '';
@@ -673,7 +685,7 @@ export default function Lays() {
           
           model.scale.set(200, 200, 200);
           model.position.set(10, 0, 0);
-          // scene.add(model);
+          scene.add(model);
           let progress = 0; 
           const speed = 0.0005; 
 
@@ -704,6 +716,7 @@ export default function Lays() {
           console.error(error);
         });
         
+
         const sphere= new THREE.SphereGeometry(0.25,24,24)
         const sphere_mesh=new THREE.MeshStandardMaterial({color:0xffffff})
         // adding stars
@@ -712,7 +725,7 @@ export default function Lays() {
             const star=new THREE.Mesh(sphere,sphere_mesh);
             const [x,y,z]=Array(3).fill(null).map(()=> THREE.MathUtils.randFloatSpread(1000));
             star.position.set(x,Math.abs(y),z);
-            // scene.add(star)
+            scene.add(star)
             }
         Array(2000).fill(null).forEach(add_starts)
         const listener = new THREE.AudioListener();
@@ -721,7 +734,7 @@ export default function Lays() {
         const sound = new THREE.Audio( listener );
             
         const audioLoader = new THREE.AudioLoader();
-        audioLoader.load( '/assets/Way Down We Go.mp3', function( buffer ) {
+        audioLoader.load( '/assets/Doin it Right (Official Audio).mp3', function( buffer ) {
           sound.setBuffer( buffer );
           sound.setLoop(true);
           sound.setVolume(0.9);
@@ -731,8 +744,8 @@ export default function Lays() {
         const analyser = new THREE.AudioAnalyser( sound, 32 );
         window.addEventListener('click', handleClick);
 
-        let progress = 0; 
-        const speed = 0.0005; 
+        let progress = 1; 
+        const speed = 0.005; 
         const animate = () => {
           requestAnimationFrame(animate)
           daftMesh.rotation.y += 0.013

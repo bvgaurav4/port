@@ -1,5 +1,5 @@
 {
-  "intro":"I am a Computer Science undergraduate at PES University with a deep passion for software development and problem-solving. Proficient in Java, Python, and C/C++, I have developed web applications, machine learning models, and games that address real-world challenges. My ability to quickly adapt to new technologies, combined with strong analytical thinking, allows me to tackle complex problems efficiently. I thrive in collaborative environments where I can contribute innovative solutions while continuously learning and refining my skills. Eager to work with forward-thinking teams, I am committed to building impactful and scalable software solutions.",
+  "intro":"I am a Computer Science undergraduate at PES University with a strong passion for software development and problem-solving. Proficient in Java, Python, and C/C++, I have built web applications, machine learning models, and games to tackle real-world challenges. My adaptability to new technologies, combined with strong analytical thinking, enables me to solve complex problems efficiently. I thrive in collaborative environments, contributing innovative solutions while continuously learning and refining my skills. Eager to work with forward-thinking teams, I am committed to developing impactful and scalable software solutions.",
 
   "projects": [
     {
@@ -43,7 +43,7 @@
       "link": ""
     }
   ],
-  "education":"2021 - 2025 Bachelor’s Degree at PES 2021  2019   Class 12th state Board  Class 10th state Board (GPA: 8.2/10.0) (88/100)  (81/100) ",
+  "education":["Bachelor’s Degree at PES   2021 - 2025   (GPA: 8.2/10.0)","Class 12th state Board    2019 - 2021  (88/100) ","Class 10th state Board    (81/100)"],
   "phone_number":"8105142720",
   "email":"bv.gaurav4@gmail.com",
   "git":"https://github.com/bvgaurav4"
