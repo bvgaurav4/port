@@ -6,6 +6,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
+import { CSG } from 'three-csg-ts';
 
 
 
@@ -55,6 +56,21 @@ export default function Lays() {
     const point1=new THREE.Vector3(155,35,0)
     const point2=new THREE.Vector3(155,35,0)
     const control=new THREE.Vector3(0,100,0)
+
+
+
+        const a=1000
+          const box = new THREE.Mesh(
+            new THREE.BoxGeometry(a, a, a,32,32,32),
+          new THREE.MeshNormalMaterial({wireframe:true}));
+          const hole= new THREE.Mesh(
+            new THREE.SphereGeometry(a*0.65),
+          new THREE.MeshNormalMaterial({wireframe:true}));
+          const base=CSG.subtract(box,hole);
+          box.updateMatrix()
+          hole.updateMatrix()
+          scene.add(base);
+    
 
     let curve = new THREE.QuadraticBezierCurve3(point1, control, point2);
     let curvePoints = curve.getPoints(150); 
@@ -781,7 +797,7 @@ export default function Lays() {
           sound.setBuffer( buffer );
           sound.setLoop(true);
           sound.setVolume(0.9);
-          // sound.play();
+          sound.play();
         });
             
         const analyser = new THREE.AudioAnalyser( sound, 32 );
@@ -792,6 +808,9 @@ export default function Lays() {
         const animate = () => {
           requestAnimationFrame(animate)
           daftMesh.rotation.y += 0.013
+          base.rotation.x+=0.009
+          base.rotation.y+=0.009
+
 
           if(progress<1)
           {
