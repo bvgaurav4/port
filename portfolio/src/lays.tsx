@@ -47,16 +47,14 @@ export default function Lays() {
     scene.add(l2);
 
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000)
-    camera.position.setX(150*Math.cos(2*1*Math.PI/6)+5)
-    camera.position.setZ(150*Math.sin(2*1*Math.PI/6)+5)
+    camera.position.setX(150*Math.cos(2*5*Math.PI/6)+5)
+    camera.position.setZ(150*Math.sin(2*5*Math.PI/6)+5)
     camera.position.setY(35)
 
 
     const point1=new THREE.Vector3(155,35,0)
     const point2=new THREE.Vector3(155,35,0)
-    const control=point1.clone();
-    control.x+=10
-    control.y+=10
+    const control=new THREE.Vector3(0,100,0)
 
     let curve = new THREE.QuadraticBezierCurve3(point1, control, point2);
     let curvePoints = curve.getPoints(150); 
@@ -129,6 +127,51 @@ export default function Lays() {
                   });
                   return button;
                 }
+
+
+        const roundbutton=(x : number,y:number,z:number,rx:number,ry:number,rz:number)=>{
+          let textMesh;
+          rx+=1
+          rz+=1
+          const loader = new FontLoader();
+          loader.load('https://threejs.org/examples/fonts/helvetiker_bold.typeface.json', function (font) {
+              const textGeometry = new TextGeometry('>', {
+                  font: font,
+                  size: 0.6,
+                  height: 0.1,
+              });
+              textGeometry.computeBoundingBox();
+              textGeometry.center();
+              const textMaterial = new THREE.MeshPhongMaterial({
+                color: new THREE.Color('#000000'),
+                emissive: new THREE.Color('#000000'),
+                specular: new THREE.Color('#ffffff'),
+                shininess: 10
+              });              
+              textMesh = new THREE.Mesh(textGeometry, textMaterial);
+              textMesh.rotation.x+=Math.PI/2;
+              textMesh.rotation.z+=ry;
+
+
+              textMesh.position.set(x,y,z);
+              textMesh.position.y+=0.3
+              textMesh.position.x+=.07
+              scene.add(textMesh);
+
+              const puck= new THREE.Mesh(
+                new THREE.CylinderGeometry(0.5,0.5,0.25),
+                new THREE.MeshPhongMaterial({
+                  color: new THREE.Color('#982625'),
+                  emissive: new THREE.Color('#9d0302'),
+                }));
+                puck.position.set(x,y+0.2,z)
+                puck.updateMatrix();
+              textMesh.updateMatrix();
+              scene.add(puck)
+          });
+          return null;
+        }
+
 
     renderer.setSize(window.innerWidth, window.innerHeight)
     if (mountRef.current) {
@@ -583,9 +626,7 @@ export default function Lays() {
             
         // 300 degrees
         loader.load( ' /assets/blade_runner_arcade_cabinet.glb', function ( gltf ) {
-
           const model = gltf.scene
-
           model.scale.set(0.090, 0.090, 0.090) 
           model.position.x+=r*Math.cos(5*2*Math.PI/6);
           model.position.z+=r*Math.sin(5*2*Math.PI/6);
@@ -613,6 +654,8 @@ export default function Lays() {
           screenMesh.rotation.x-=Math.PI/10;
           screenMesh.scale.set(200,200,200)
           model.add(screenMesh);
+          roundbutton((r+2)*Math.cos(5*2*Math.PI/6)-1,25.5,(r+2)*Math.sin(5*2*Math.PI/6)-2,0,Math.PI+Math.PI/6,0);
+          roundbutton((r+2)*Math.cos(5*2*Math.PI/6)+2.5,25.5,(r+2)*Math.sin(5*2*Math.PI/6),0,Math.PI/6,0);
 
           if(screenContext){
 
@@ -738,7 +781,7 @@ export default function Lays() {
           sound.setBuffer( buffer );
           sound.setLoop(true);
           sound.setVolume(0.9);
-          sound.play();
+          // sound.play();
         });
             
         const analyser = new THREE.AudioAnalyser( sound, 32 );
@@ -792,4 +835,4 @@ export default function Lays() {
           }, [])
   return <div ref={mountRef}>
   </div>
-}
+} 
