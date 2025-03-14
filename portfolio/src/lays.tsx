@@ -10,6 +10,7 @@ import { CSG } from 'three-csg-ts';
 
 
 
+
 export default function Lays() {
   const mountRef = useRef<HTMLDivElement>(null)
   const textrender =(text:string ,width: number)=>{
@@ -36,10 +37,12 @@ export default function Lays() {
     return t3
     }
 
-
   useEffect(() => {
     var models=Array();
     const jsonData=JSON.parse(jsonString);
+    var projects=jsonData.projects
+    console.log(projects)
+    var project_index=0;
     const scene = new THREE.Scene()
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
@@ -57,21 +60,18 @@ export default function Lays() {
     const point2=new THREE.Vector3(155,35,0)
     const control=new THREE.Vector3(0,100,0)
 
-
-
-        const a=1000
-          const box = new THREE.Mesh(
-            new THREE.BoxGeometry(a, a, a,32,32,32),
-          new THREE.MeshNormalMaterial({wireframe:true}));
-          const hole= new THREE.Mesh(
-            new THREE.SphereGeometry(a*0.65),
-          new THREE.MeshNormalMaterial({wireframe:true}));
-          const base=CSG.subtract(box,hole);
-          box.updateMatrix()
-          hole.updateMatrix()
-          scene.add(base);
+      const a=750
+        const box = new THREE.Mesh(
+          new THREE.BoxGeometry(a, a, a,32,32,32),
+        new THREE.MeshNormalMaterial({wireframe:true}));
+        const hole= new THREE.Mesh(
+          new THREE.SphereGeometry(a*0.65,64,64,64),
+        new THREE.MeshNormalMaterial({wireframe:true}));
+        const base=CSG.subtract(box,hole);
+        box.updateMatrix()
+        hole.updateMatrix()
+        scene.add(base);
     
-
     let curve = new THREE.QuadraticBezierCurve3(point1, control, point2);
     let curvePoints = curve.getPoints(150); 
     let geometry1 = new THREE.BufferGeometry().setFromPoints(curvePoints);
@@ -205,7 +205,7 @@ export default function Lays() {
     const handleClick=(event: { clientX: number; clientY: number; })=>{
       mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
+      project_index++;
       raycaster.setFromCamera(mouse, camera);
       for(var obj=0;obj<models.length;obj++)
       {
@@ -386,7 +386,8 @@ export default function Lays() {
           screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
           screenContext.fillStyle = 'green';
           screenContext.font = '40px MyCustomFont';
-          var text = textrender(jsonData.intro,30);
+          var project=projects[project_index]
+          var text = textrender(project.title + project.content,30);
           for(var i =0;i<text.length;i++){
             var str=text[i];
             screenContext.fillText(str, 180, 130+i*55);
@@ -400,9 +401,6 @@ export default function Lays() {
       console.error( error );
 
     } );
-
-            
-
              
             //120 degree  
             loader.load( ' /assets/blade_runner_arcade_cabinet.glb', function ( gltf ) {
@@ -473,9 +471,6 @@ export default function Lays() {
               }
                 screenTexture.needsUpdate = true;
               }
-
-
-              
             }, undefined, function ( error ) {
               
               console.error( error );
@@ -516,7 +511,6 @@ export default function Lays() {
               screenMesh.scale.set(2,2,2)
               screenMesh.position.set(0,2.7,0.27);
 
-
               screenMesh.rotation.x-=Math.PI/8
 
               model.add(screenMesh);
@@ -527,9 +521,6 @@ export default function Lays() {
                 screenContext.fillStyle = 'white';
                 // screenContext.font = '30px Seven Segment';
                 screenContext.font = '40px MyCustomFont';
-
-
-
                 
               if(screenContext){
                 // screenContext.fillStyle = '';
@@ -554,9 +545,7 @@ export default function Lays() {
             }, undefined, function ( error ) {
             
               console.error( error );
-            
             } );
-
             
             // 240 degrees    
             loader.load( ' /assets/arcade_machine (2).glb', function ( gltf ) {
@@ -608,32 +597,14 @@ export default function Lays() {
                   screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
                   screenContext.fillStyle = 'green';
                   screenContext.font = '40px MyCustomFont';
-                  var text="Currently pursuing a Bachelor’s in Computer Science at PES University, with a strong passion for software development. Proficient in Java, Python, and C/C++, I have built impactful web applications, machine learning models, and games. Known for problem-solving and quick adaptability, I am eager to bring my skills and enthusiasm to a collaborative development team focused on innovative solutions." 
-                  var textarray=text.split(" ")
-                  var t2=Array();
-                  var count=0;
-                  var c2=0;
-                  for(var i=0;i<textarray.length;i++)
-                  {
-                    if((count+textarray[i].length)*30>1524)
-                    {
-                      c2++;
-                      count=0;
-                      var str=t2.join(" ")
-                      screenContext.fillText(str, 180, 130+c2*55);
-                      t2=Array();
-                    }else{
-                      t2.push(textarray[i]);
-                      count+=textarray[i].length;
-                    }  
-                    
-                  }  
-                  var str=t2.join(" ")
-                  screenContext.fillText(str, 180, 130+(c2+1)*35);
+                  var text = textrender("Hey! What do you think of my website idea? Do you like it? Is the website good? Would you hire me to create awesome stuff like this for your company too? ",30);
+                  for(var i =0;i<text.length;i++){
+                    var str=text[i];
+                    screenContext.fillText(str, 180, 130+i*55);
+                  }
                 }  
                 screenTexture.needsUpdate = true;
               }  
-        
             }, undefined, function ( error ) {
             
               console.error(error );
@@ -655,7 +626,6 @@ export default function Lays() {
                model.rotateY(-7*Math.PI/6)
           scene.add( model );
               scene.add(cube)
-
           const screenCanvas = document.createElement('canvas');
           screenCanvas.width = 1524;
           screenCanvas.height = 1524;
@@ -687,7 +657,7 @@ export default function Lays() {
             screenContext.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
             screenContext.fillStyle = 'green';
             screenContext.font = '40px MyCustomFont';
-            var text="Currently pursuing a Bachelor’s in Computer Science at PES University, with a strong passion for software development. Proficient in Java, Python, and C/C++, I have built impactful web applications, machine learning models, and games. Known for problem-solving and quick adaptability, I am eager to bring my skills and enthusiasm to a collaborative development team focused on innovative solutions." 
+            var text="Coming soon!!!!." 
             var textarray=text.split(" ")
             var t2=Array();
             var count=0;
@@ -712,10 +682,7 @@ export default function Lays() {
             
           }
             screenTexture.needsUpdate = true;
-          }
-
-
-          
+          }          
         }, undefined, function ( error ) {
           
           console.error( error );
@@ -768,18 +735,15 @@ export default function Lays() {
 
             requestAnimationFrame(animate);
           }
-
           animate();
 
         }, undefined, function (error) {
           console.error(error);
         });
         
-
         const sphere= new THREE.SphereGeometry(0.25,24,24)
         const sphere_mesh=new THREE.MeshStandardMaterial({color:0xffffff})
         // adding stars
-
         function add_starts(){
             const star=new THREE.Mesh(sphere,sphere_mesh);
             const [x,y,z]=Array(3).fill(null).map(()=> THREE.MathUtils.randFloatSpread(1000));
@@ -810,15 +774,12 @@ export default function Lays() {
           daftMesh.rotation.y += 0.013
           base.rotation.x+=0.009
           base.rotation.y+=0.009
-
-
           if(progress<1)
           {
             const position = curve.getPointAt(progress); 
             camera.position.copy(position);
             progress += speed; 
           }
-
           var a=analyser.getFrequencyData();
           var condence=[];
           for(var i=0;i<a.length/2;i++)
