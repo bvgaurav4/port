@@ -268,7 +268,7 @@ export default function Lays() {
     const loader = new GLTFLoader();
 
     // degree 0
-    loader.load( ' /assets/postapocaliptic_diablo_arcade_machine.glb ', function ( gltf ) {
+    loader.load( ' /assets/postapocaliptic_diablo_arcade_machine(1).glb ', function ( gltf ) {
       const model = gltf.scene
     
       const cube =container(r*Math.cos(2*0*Math.PI/6),r*Math.sin(2*0*Math.PI/6),15,35,15);
@@ -403,7 +403,7 @@ export default function Lays() {
     } );
              
             //120 degree  
-            loader.load( ' /assets/blade_runner_arcade_cabinet.glb', function ( gltf ) {
+            loader.load( ' /assets/blade_runner_arcade_cabinet (1).glb', function ( gltf ) {
               const model = gltf.scene
               const cube=container(r*Math.cos(2*2*Math.PI/6),r*Math.sin(2*2*Math.PI/6),15,35,15)
                             const pos={ "x":10,"y":10,"z":10};
@@ -479,7 +479,7 @@ export default function Lays() {
 
             
             //180 degrees
-            loader.load( ' /assets/arcade_machine__automaping.glb', function ( gltf ) {
+            loader.load( '/assets/arcade_machine__automaping (1).glb', function ( gltf ) {
               const model = gltf.scene
 
               model.scale.set(10, 10, 10) 
@@ -612,7 +612,7 @@ export default function Lays() {
             } );  
             
         // 300 degrees
-        loader.load( ' /assets/blade_runner_arcade_cabinet.glb', function ( gltf ) {
+        loader.load( ' /assets/blade_runner_arcade_cabinet (1).glb', function ( gltf ) {
           const model = gltf.scene
           model.scale.set(0.090, 0.090, 0.090) 
           model.position.x+=r*Math.cos(5*2*Math.PI/6);
@@ -746,11 +746,12 @@ export default function Lays() {
         // adding stars
         function add_starts(){
             const star=new THREE.Mesh(sphere,sphere_mesh);
-            const [x,y,z]=Array(3).fill(null).map(()=> THREE.MathUtils.randFloatSpread(1000));
+            const [x,y,z]=Array(3).fill(null).map(()=> THREE.MathUtils.randFloatSpread(750));
             star.position.set(x,Math.abs(y),z);
             scene.add(star)
             }
-        Array(2000).fill(null).forEach(add_starts)
+        Array(1000).fill(null).forEach(add_starts)
+        
         const listener = new THREE.AudioListener();
         camera.add( listener );
             
@@ -761,7 +762,7 @@ export default function Lays() {
           sound.setBuffer( buffer );
           sound.setLoop(true);
           sound.setVolume(0.9);
-          sound.play();
+          // sound.play();
         });
             
         const analyser = new THREE.AudioAnalyser( sound, 32 );
@@ -772,8 +773,8 @@ export default function Lays() {
         const animate = () => {
           requestAnimationFrame(animate)
           daftMesh.rotation.y += 0.013
-          base.rotation.x+=0.009
-          base.rotation.y+=0.009
+          base.rotation.x+=0.001
+          base.rotation.y+=0.001
           if(progress<1)
           {
             const position = curve.getPointAt(progress); 

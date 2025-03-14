@@ -1,12 +1,14 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
-import App from "./App";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import './index.css'
+import Lays from "./lays";
+import Landing from "./landing";
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
     <BrowserRouter>
-      <App />
+     <Routes>
+        <Route path="/" element={<Landing/>} />
+        <Route path="/bv.gaurav" element={<Lays />} />
+      </Routes> 
     </BrowserRouter>
-  </React.StrictMode>
 );
+ 
