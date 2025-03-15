@@ -3,7 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import './index.css'
 import Lays from "./lays";
 import Landing from "./landing";
-import App from "./test";
+// import App from "./test";
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <BrowserRouter>
      <Routes>
