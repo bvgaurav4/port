@@ -8,9 +8,6 @@ import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
 import { CSG } from 'three-csg-ts';
 
-
-
-
 export default function Lays() {
   const mountRef = useRef<HTMLDivElement>(null)
   const textrender =(text:string ,width: number)=>{
@@ -40,8 +37,7 @@ export default function Lays() {
   useEffect(() => {
     var models=Array();
     const jsonData=JSON.parse(jsonString);
-    var projects=jsonData.projects
-    console.log(projects)
+    var projects=jsonData.projects;
     var project_index=0;
     const scene = new THREE.Scene()
     const raycaster = new THREE.Raycaster();
@@ -57,20 +53,20 @@ export default function Lays() {
 
 
     const point1=new THREE.Vector3(155,35,0)
-    const point2=new THREE.Vector3(155,35,0)
-    const control=new THREE.Vector3(0,100,0)
+    const point2=new THREE.Vector3(0,400,0)
+    const control=new THREE.Vector3(0,35,155)
 
-      const a=750
-        const box = new THREE.Mesh(
-          new THREE.BoxGeometry(a, a, a,32,32,32),
-        new THREE.MeshNormalMaterial({wireframe:true}));
-        const hole= new THREE.Mesh(
-          new THREE.SphereGeometry(a*0.65,64,64,64),
-        new THREE.MeshNormalMaterial({wireframe:true}));
-        const base=CSG.subtract(box,hole);
-        box.updateMatrix()
-        hole.updateMatrix()
-        scene.add(base);
+    const a=750
+    const box = new THREE.Mesh(
+      new THREE.BoxGeometry(a, a, a,32,32,32),
+    new THREE.MeshNormalMaterial({wireframe:true}));
+    const hole= new THREE.Mesh(
+      new THREE.SphereGeometry(a*0.65,64,64,64),
+    new THREE.MeshNormalMaterial({wireframe:true}));
+    const base=CSG.subtract(box,hole);
+    box.updateMatrix()
+    hole.updateMatrix()
+    scene.add(base);
     
     let curve = new THREE.QuadraticBezierCurve3(point1, control, point2);
     let curvePoints = curve.getPoints(150); 
@@ -127,7 +123,7 @@ export default function Lays() {
                       const textGeometry = new TextGeometry(text, {
                           font: font,
                           size: 0.35,
-                          height: t*0.75,
+                          depth: t*0.75,
                       });
                       const textMaterial = new THREE.MeshPhongMaterial({
                         color: new THREE.Color('#982625'),
@@ -154,7 +150,7 @@ export default function Lays() {
               const textGeometry = new TextGeometry('>', {
                   font: font,
                   size: 0.6,
-                  height: 0.1,
+                  depth: 0.1,
               });
               textGeometry.computeBoundingBox();
               textGeometry.center();
@@ -201,7 +197,14 @@ export default function Lays() {
     const daftMesh = new THREE.Mesh(daft, daftMaterial)
     daftMesh.position.set(0, -10, 0);
     scene.add(daftMesh)
-      
+    const dist=(p1: THREE.Vector3 ,p2:THREE.Vector3,src : THREE.Vector3 )=>{
+      p1.distanceTo(p2)
+      if(src.distanceTo(p1)<src.distanceTo(p2))
+      {
+        return p1;
+      }
+      return p2
+    }
     const handleClick=(event: { clientX: number; clientY: number; })=>{
       mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -211,9 +214,24 @@ export default function Lays() {
       {
         const intersects = raycaster.intersectObject(models[obj][0]);
         if (intersects.length > 0) {
-          console.log('Button clicked!',models[obj]); 
+          models[obj][2].clearRect(0, 0, 1524, 1524);
+          if(models[obj][3]!=null)
+          {
+            const nextb =raycaster.intersectObject(models[obj][3])
+            if(nextb.length>0)
+            {
+              project_index++;
+              console.log("brooo")
+            }
+          }
           var point1=camera.position.clone();
           var point2= models[obj][0].position.clone();
+          point2.x=models[obj][1].x
+          point2.z=models[obj][1].z
+          point2.y=models[obj][1].y
+          var control=new THREE.Vector3(0,100,0)
+          control=dist(point2,control,point1)
+
           curve = new THREE.QuadraticBezierCurve3(point1, control, point2);
           curvePoints = curve.getPoints(150); 
           geometry1 = new THREE.BufferGeometry().setFromPoints(curvePoints);
@@ -223,7 +241,6 @@ export default function Lays() {
           progress=0;
         }
       }
-
     }
     const orbit = new OrbitControls(camera, renderer.domElement)
     const grid = new THREE.GridHelper(1000, 100)
@@ -271,21 +288,19 @@ export default function Lays() {
     loader.load( ' /assets/postapocaliptic_diablo_arcade_machine(1).glb ', function ( gltf ) {
       const model = gltf.scene
     
-      const cube =container(r*Math.cos(2*0*Math.PI/6),r*Math.sin(2*0*Math.PI/6),15,35,15);
+      const cube =container(r*Math.cos(2*0*Math.PI/6),r*Math.sin(2*0*Math.PI/6),13,35,13);
       scene.add(cube)
 
-      const pos={ "x":10,"y":10,"z":10};
-      const lookat={"x":0,"y":0,"z":0};
       var temp=Array();
-      temp.push(cube,pos,lookat);
       models.push(temp)
       model.scale.set(20, 20, 20) 
-
+      
       model.position.set(0,20,0)
       model.position.x+=r*Math.cos(2*0*Math.PI/6);
       model.position.z+=r*Math.sin(2*0*Math.PI/6);
+      const pos={ "x":(r+17)*Math.cos(2*0*Math.PI/6),"y":30,"z":(r+17)*Math.sin(2*0*Math.PI/6)};
       scene.add( model );
-
+      
       const screenCanvas = document.createElement('canvas');
       screenCanvas.width = 1524;
       screenCanvas.height = 1524;
@@ -293,7 +308,9 @@ export default function Lays() {
       const screenContext = screenCanvas.getContext('2d');
       const screenTexture = new THREE.CanvasTexture(screenCanvas);
       const screenMaterial = new THREE.MeshBasicMaterial({ map: screenTexture });
-  
+      
+      temp.push(cube,pos,screenContext,null,null);
+
       const screenGeometry = new THREE.PlaneGeometry(0.5, 0.5);
       let screenMesh; 
 
@@ -333,37 +350,38 @@ export default function Lays() {
 
     //degree 60
     loader.load( '  /assets/arcade_machine (2).glb', function ( gltf ) {
-      const pos={ "x":10,"y":10,"z":10};
-      const lookat={"x":0,"y":0,"z":0};
       const cube=container(r*Math.cos(2*1*Math.PI/6),r*Math.sin(2*1*Math.PI/6),15,35,15)
       var temp=Array();
       models.push(temp)                
       scene.add(cube)
-
+      
       let nextbutton=makingButtons(r*Math.cos(2*1*Math.PI/6)+6.5,24,r*Math.sin(2*1*Math.PI/6)+6.5,-Math.PI/2,0,Math.PI/6,"next",1,0.25,0.2);
       let prevbutton=makingButtons(r*Math.cos(2*1*Math.PI/6)+3,24,r*Math.sin(2*1*Math.PI/6)+8.4,-Math.PI/2,0,Math.PI/6,"prev",1,0.25,0.2);
-
       
-      temp.push(cube,pos,lookat,nextbutton,prevbutton);
+      
       
       const model = gltf.scene
-
+      
       model.scale.set(0.1, 0.1, 0.1) 
       model.position.set(0,23,0);
       model.position.x+=r*Math.cos(2*1*Math.PI/6);
       model.position.z+=r*Math.sin(2*1*Math.PI/6);
       model.rotateY(Math.PI/4);
-
+      
+      const pos={ "x":(r+25)*Math.cos(2*1*Math.PI/6),"y":33,"z":(r+25)*Math.sin(2*1*Math.PI/6)};
+      
       model.rotateY(-Math.PI/3)
       scene.add( model );
-
+      
       const screenCanvas = document.createElement('canvas');
       screenCanvas.width = 1524;
       screenCanvas.height = 1524;
       const screenContext = screenCanvas.getContext('2d');
       const screenTexture = new THREE.CanvasTexture(screenCanvas);
       const screenMaterial = new THREE.MeshBasicMaterial({ map: screenTexture });
-  
+      
+      temp.push(cube,pos,screenContext,nextbutton,prevbutton);
+
       const screenGeometry = new THREE.PlaneGeometry(1, 1);
       let screenMesh; 
 
@@ -406,16 +424,14 @@ export default function Lays() {
             loader.load( ' /assets/blade_runner_arcade_cabinet (1).glb', function ( gltf ) {
               const model = gltf.scene
               const cube=container(r*Math.cos(2*2*Math.PI/6),r*Math.sin(2*2*Math.PI/6),15,35,15)
-                            const pos={ "x":10,"y":10,"z":10};
-              const lookat={"x":0,"y":0,"z":0};
-              var temp=Array();
-              temp.push(cube,pos,lookat);
-              models.push(temp)              
               scene.add(cube)
               model.scale.set(0.090, 0.090, 0.090) 
               model.position.x+=r*Math.cos(2*2*Math.PI/6);
               model.position.z+=r*Math.sin(2*2*Math.PI/6);
+              const pos={ "x":(r+20)*Math.cos(2*2*Math.PI/6),"y":35,"z":(r+20)*Math.sin(2*2*Math.PI/6)};
+              var temp=Array();
               model.rotateY(-1*Math.PI/6)
+              models.push(temp)              
               scene.add( model );
               const screenCanvas = document.createElement('canvas');
               screenCanvas.width = 1524;
@@ -423,6 +439,8 @@ export default function Lays() {
               const screenContext = screenCanvas.getContext('2d');
               const screenTexture = new THREE.CanvasTexture(screenCanvas);
               const screenMaterial = new THREE.MeshBasicMaterial({ map: screenTexture });
+              
+              temp.push(cube,pos,screenContext,null,null);
           
               const screenGeometry = new THREE.PlaneGeometry(1, 1);
               let screenMesh; 
@@ -489,13 +507,11 @@ export default function Lays() {
               model.position.z+=r*Math.sin(2*3*Math.PI/6);
 
               const cube=container(r*Math.cos(2*3*Math.PI/6),r*Math.sin(2*3*Math.PI/6),15,35,15)
-                            const pos={ "x":10,"y":10,"z":10};
-              const lookat={"x":0,"y":0,"z":0};
+              const pos={ "x":(r+20)*Math.cos(2*3*Math.PI/6),"y":30,"z":(r+20)*Math.sin(2*3*Math.PI/6)};
               var temp=Array();
-              temp.push(cube,pos,lookat);
               models.push(temp)              
               scene.add(cube)
-
+              
               scene.add( model );
               const screenCanvas = document.createElement('canvas');
               screenCanvas.width = 1524;
@@ -503,7 +519,9 @@ export default function Lays() {
               const screenContext = screenCanvas.getContext('2d');
               const screenTexture = new THREE.CanvasTexture(screenCanvas);
               const screenMaterial = new THREE.MeshBasicMaterial({ map: screenTexture });
-          
+              
+              temp.push(cube,pos,screenContext,null,null);
+
               const screenGeometry = new THREE.PlaneGeometry(0.8, 0.5);
               let screenMesh; 
 
@@ -550,31 +568,31 @@ export default function Lays() {
             // 240 degrees    
             loader.load( ' /assets/arcade_machine (2).glb', function ( gltf ) {
               const cube=container(r*Math.cos(2*4*Math.PI/6),r*Math.sin(2*4*Math.PI/6),15,35,15)
-              const pos={ "x":10,"y":10,"z":10};
-              const lookat={"x":0,"y":0,"z":0};
-
+              
               const model = gltf.scene
-
+              
               model.scale.set(0.1, 0.1, 0.1) 
               model.position.set(0,23,0);
-
+              
               model.position.x+=r*Math.cos(2*4*Math.PI/6);
               model.position.z+=r*Math.sin(2*4*Math.PI/6);
+              const pos={ "x":(r+25)*Math.cos(2*4*Math.PI/6),"y":33,"z":(r+25)*Math.sin(2*4*Math.PI/6)};
               model.rotateY(Math.PI/4);
               model.rotateY(2*Math.PI/3)
               var temp=Array();
-              temp.push(cube,pos,lookat);
               models.push(temp)              
               scene.add( model );
               scene.add(cube)
-
+              
               const screenCanvas = document.createElement('canvas');
               screenCanvas.width = 1524;
               screenCanvas.height = 1524;
               const screenContext = screenCanvas.getContext('2d');
               const screenTexture = new THREE.CanvasTexture(screenCanvas);
               const screenMaterial = new THREE.MeshBasicMaterial({ map: screenTexture });
-          
+              
+              temp.push(cube,pos,screenContext,null,null);
+
               const screenGeometry = new THREE.PlaneGeometry(1, 1);
               let screenMesh; 
 
@@ -618,21 +636,23 @@ export default function Lays() {
           model.position.x+=r*Math.cos(5*2*Math.PI/6);
           model.position.z+=r*Math.sin(5*2*Math.PI/6);
           const cube=container(r*Math.cos(5*2*Math.PI/6),r*Math.sin(5*2*Math.PI/6),15,35,15)
-                        const pos={ "x":10,"y":10,"z":10};
-              const lookat={"x":0,"y":0,"z":0};
-              var temp=Array();
-              temp.push(cube,pos,lookat);
-              models.push(temp)         
-               model.rotateY(-7*Math.PI/6)
+          const pos={ "x":(r+20)*Math.cos(5*2*Math.PI/6),"y":35,"z":(r+20)*Math.sin(5*2*Math.PI/6)};
+          var temp=Array();
+          var next=roundbutton((r+2)*Math.cos(5*2*Math.PI/6)-1,25.5,(r+2)*Math.sin(5*2*Math.PI/6)-2,0,Math.PI+Math.PI/6,0);
+          var prev=roundbutton((r+2)*Math.cos(5*2*Math.PI/6)+2.5,25.5,(r+2)*Math.sin(5*2*Math.PI/6),0,Math.PI/6,0);
+          models.push(temp)         
+          model.rotateY(-7*Math.PI/6)
           scene.add( model );
-              scene.add(cube)
+          scene.add(cube)
           const screenCanvas = document.createElement('canvas');
           screenCanvas.width = 1524;
           screenCanvas.height = 1524;
           const screenContext = screenCanvas.getContext('2d');
           const screenTexture = new THREE.CanvasTexture(screenCanvas);
           const screenMaterial = new THREE.MeshBasicMaterial({ map: screenTexture });
-      
+          
+          temp.push(cube,pos,screenContext,next,prev);
+
           const screenGeometry = new THREE.PlaneGeometry(1, 1);
           let screenMesh; 
           screenMesh = new THREE.Mesh(screenGeometry, screenMaterial);
@@ -640,8 +660,6 @@ export default function Lays() {
           screenMesh.rotation.x-=Math.PI/10;
           screenMesh.scale.set(200,200,200)
           model.add(screenMesh);
-          roundbutton((r+2)*Math.cos(5*2*Math.PI/6)-1,25.5,(r+2)*Math.sin(5*2*Math.PI/6)-2,0,Math.PI+Math.PI/6,0);
-          roundbutton((r+2)*Math.cos(5*2*Math.PI/6)+2.5,25.5,(r+2)*Math.sin(5*2*Math.PI/6),0,Math.PI/6,0);
 
           if(screenContext){
 
@@ -768,7 +786,7 @@ export default function Lays() {
         const analyser = new THREE.AudioAnalyser( sound, 32 );
         window.addEventListener('click', handleClick);
 
-        let progress = 1; 
+        let progress = 0; 
         const speed = 0.005; 
         const animate = () => {
           requestAnimationFrame(animate)
