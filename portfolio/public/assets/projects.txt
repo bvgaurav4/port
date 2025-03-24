@@ -9,40 +9,53 @@
     },
     {
       "title": "Game Controller",
-      "content": "A custom game controller built using an Arduino Pro Micro. The controller’s firmware is written in C++ for optimal performance. It features built-in haptic feedback for enhanced tactile responses.",
+      "content": "A custom game controller, built using an Arduino Pro Micro, is designed for precision and responsiveness, making it ideal for gaming enthusiasts. Its firmware is written in the Arduino Language (C++), ensuring optimal performance and seamless input handling. One of its standout features is built-in haptic feedback, which provides tactile responses to enhance the gaming experience. The controller is compact and ergonomically designed for comfortable use during extended gaming sessions. Additionally, its customizable firmware allows users to modify controls and fine-tune performance to match their gaming preferences. With its Arduino-powered flexibility and high-performance capabilities, this controller offers a unique and immersive way to interact with games.",
       "link": ""
     },
     {
       "title": "Coviteam: Collaborative Team Network",
-      "content": "A platform designed to enhance collaboration and productivity within teams. Built with React.js (frontend), Node.js (backend), and Vite for fast development. Hosted using Ngrok for secure and easy access.",
+      "content": "Coviteam is a platform designed to enhance collaboration and productivity within teams. It provides a centralized space where team members can share ideas, manage tasks, and work together on projects. With Coviteam, you can streamline your team's workflow, improve communication, and foster a culture of transparency and accountability. Built with React.js with Vite (frontend), Golang (backend) and Mysql for database. Hosted using Ngrok for secure and easy access.",
       "link": "git"
     },
     {
       "title": "TrackM8",
-      "content": "An application designed to assist aim in FPS games. Uses pretrained models (MobileNet V2 and YOLO V5) fine-tuned on a custom-labeled dataset. Mouse movement assistance is managed via an Arduino Pro Micro, with communication over a serial port.",
+      "content": "The application is designed to enhance aiming accuracy in first-person shooter (FPS) games by leveraging the power of computer vision and machine learning. It utilizes pretrained deep learning models, specifically MobileNet V2 and YOLO V5, which have been fine-tuned on a custom-labeled dataset to detect and track targets efficiently. The system processes real-time gameplay footage to provide precise aiming assistance. For seamless control, mouse movement adjustments are handled by an Arduino Pro Micro, which communicates with the application via a serial port. This setup ensures low-latency response times and a smooth gaming experience. By integrating machine learning-based target detection with hardware-assisted aim support, the application offers a powerful tool for FPS players looking to improve their accuracy and reaction speed.",
       "link": ""
     },
     {
       "title": "Automated Redundant Sentence Removal and Summarization (Hindi)",
-      "content": "A system for detecting and eliminating redundant sentences in Hindi documents while preserving key information. Uses SentenceBERT trained on a translated STS Benchmark dataset. Summarization is performed using extractive graph-based methods that detect communities and remove redundancies.",
+      "content": "The Project is designed to identify and eliminate redundant sentences in Hindi documents while ensuring that all essential information is preserved. It leverages SentenceBERT, a powerful transformer-based model trained on a translated STS (Semantic Textual Similarity) Benchmark dataset, to measure the semantic similarity between sentences. By analyzing sentence embeddings, the system accurately detects overlapping or repetitive content within a document. To achieve effective summarization, the system employs extractive, graph-based methods that analyze sentence relationships and structure. Using community detection algorithms, it identifies clusters of similar sentences, extracts the most representative ones, and removes redundancies without compromising key details. This approach ensures that the final summary retains maximum informational value while significantly reducing repetitive content, making it useful for tasks like document summarization, content refinement, and automatic text compression in Hindi-language processing.",
       "link": ""
     },
     {
       "title": "EchoBlog (Twitter Clone)",
-      "content": "A blogging and social networking application built using Java. The backend is implemented in Java, while the user interface is developed with JavaFX. Features instant messaging with potential for group chat support.",
+      "content": "This project is a blogging and social networking application built using Java, designed for seamless user interaction. The backend, implemented in Java, ensures a scalable and efficient architecture, while the user interface is developed with JavaFX, providing a smooth and modern experience. The application features instant messaging, enabling real-time communication between users, with potential support for group chats. Users can create blog posts, share media, and engage through likes, comments, and shares. With its robust Java backend and an interactive JavaFX frontend, this platform combines blogging, messaging, and community engagement into a single, user-friendly application.",
       "link": "git"
     },
     {
       "title": "Paper Recommendation System",
-      "content": "A system that recommends academic papers based on user queries. Uses a BART model for summarization and embeddings, combined with edge pooling for graph-based similarity scoring. The top 10 most relevant papers are extracted and recommended.",
+      "content": "This system recommends academic papers based on user queries by combining NLP and graph-based techniques. It uses a BART model for summarization and embedding generation, ensuring that paper content is effectively represented for comparison. To rank relevance, the system applies graph-based similarity scoring with edge pooling, allowing it to identify connections between research papers efficiently. Based on this analysis, it retrieves and recommends the top 10 most relevant papers. The dataset for this system is sourced from Aminer, a well-known academic research database. By integrating deep learning with graph-based methods, this system provides accurate and relevant paper recommendations, helping researchers quickly discover useful literature.",
       "link": ""
     },
     {
       "title": "Plagiarism Check for Codes",
-      "content": "A system to detect code plagiarism in college assignments. Utilizes CodeBERT (4luc/codebert-code-clone-detector) to generate embeddings for code snippets. Embeddings are compared using cosine similarity to measure the level of copying.",
+      "content": "This system detects code plagiarism in college assignments by leveraging CodeBERT (4luc/codebert-code-clone-detector) to generate embeddings for code snippets. These embeddings capture the semantic meaning of the code, allowing for more accurate plagiarism detection beyond simple text matching. The system then compares the embeddings using cosine similarity, measuring the level of copying even when variable names, formatting, or minor structures are changed. By combining deep learning and embedding-based analysis, this approach provides an efficient and scalable way to ensure code originality and prevent unethical code sharing in academic settings.",
       "link": ""
     }
   ],
+  "exp":[
+      {
+        "title":"Bosch",
+        "content": "The Project is designed to identify and eliminate redundant sentences in Hindi documents while ensuring that all essential information is preserved. It leverages SentenceBERT, a powerful transformer-based model trained on a translated STS (Semantic Textual Similarity) Benchmark dataset, to measure the semantic similarity between sentences. By analyzing sentence embeddings, the system accurately detects overlapping or repetitive content within a document. To achieve effective summarization, the system employs extractive, graph-based methods that analyze sentence relationships and structure. Using community detection algorithms, it identifies clusters of similar sentences, extracts the most representative ones, and removes redundancies without compromising key details. This approach ensures that the final summary retains maximum informational value while significantly reducing repetitive content, making it useful for tasks like document summarization, content refinement, and automatic text compression in Hindi-language processing."
+      },
+      {
+        "title":"BlackBuck",
+        "content": "The Project is designed to identify and eliminate redundant sentences in Hindi documents while ensuring that all essential information is preserved. It leverages SentenceBERT, a powerful transformer-based model trained on a translated STS (Semantic Textual Similarity) Benchmark dataset, to measure the semantic similarity between sentences. By analyzing sentence embeddings, the system accurately detects overlapping or repetitive content within a document. To achieve effective summarization, the system employs extractive, graph-based methods that analyze sentence relationships and structure. Using community detection algorithms, it identifies clusters of similar sentences, extracts the most representative ones, and removes redundancies without compromising key details. This approach ensures that the final summary retains maximum informational value while significantly reducing repetitive content, making it useful for tasks like document summarization, content refinement, and automatic text compression in Hindi-language processing."
+      }
+    ],
+    "papers":[{
+      "title":"Detecting Anomalous Self-Citations using Citation Network Analysis and LLMs",
+      "content":"Accurately evaluating research impact is crucial in academia, influencing funding, promo-tions, and recognition. However, excessive self-citations can distort citation metrics, undermining fairassessment. This study introduces a novel methodology to detect anomalous self-citations using citation network analysis and advanced Natural Language Processing with Large Language Models. A citation network is constructed from a large-scale academic dataset, where nodes represent papers and authors, and edges capture citation "}],
   "education":["Bachelor’s Degree at PES   2021 - 2025   (GPA: 8.2/10.0)","Class 12th state Board    2019 - 2021  (88/100) ","Class 10th state Board    (81/100)"],
   "phone_number":"8105142720",
   "email":"bv.gaurav4@gmail.com",

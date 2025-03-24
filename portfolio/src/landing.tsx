@@ -1,14 +1,12 @@
 import { Blockquote, Button, MantineProvider } from '@mantine/core';
 import { Card, Image, Text, Badge,  Group } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
-// import './index.css'
+import './index.css'
 
 export default function Landing() {
   const navigate = useNavigate();
   const mainPage=()=>{
-
-    console.log("finally almost done");
-    navigate("/bv.gaurav");
+  navigate("/bv.gaurav");
   }
   return (
     <MantineProvider theme={{ fontFamily: 'Open Sans' }} withGlobalStyles withNormalizeCSS>
