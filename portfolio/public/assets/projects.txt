@@ -3,8 +3,8 @@
 
   "projects": [
     {
-      "title": "Multiplayer Game Server",
-      "content": "A Multiplayer Game Server built using Node.js and Unity3D. The server receives position data from clients and synchronizes it across players. The update rate depends on the player's frame rate.",
+      "title": "Multiplayer Game Server (Tron Clone) | Go, Gorilla WebSocket, Three.js",
+      "content": "Built a Tron light cycle-inspired multiplayer game with a real-time game server using Golang and Gorilla WebSocket for low-latency communication. Used Three.js for immersive 3D rendering. Designed a dynamic per-pool tracking system to manage multiple concurrent game sessions, each supporting up to 10 players, with real-time position syncing and collision logic.",
       "link": ""
     },
     {
@@ -45,17 +45,18 @@
   ],
   "exp":[
       {
-        "title":"Bosch",
-        "content": "The Project is designed to identify and eliminate redundant sentences in Hindi documents while ensuring that all essential information is preserved. It leverages SentenceBERT, a powerful transformer-based model trained on a translated STS (Semantic Textual Similarity) Benchmark dataset, to measure the semantic similarity between sentences. By analyzing sentence embeddings, the system accurately detects overlapping or repetitive content within a document. To achieve effective summarization, the system employs extractive, graph-based methods that analyze sentence relationships and structure. Using community detection algorithms, it identifies clusters of similar sentences, extracts the most representative ones, and removes redundancies without compromising key details. This approach ensures that the final summary retains maximum informational value while significantly reducing repetitive content, making it useful for tasks like document summarization, content refinement, and automatic text compression in Hindi-language processing."
+        "title":"Bosch Automotive Electronics India Pvt. Ltd., Bangalore",
+        "content": "Completed a project on “ML-based recommendation for Adapter and Polig” as part of the Manufacturing Digitalization Department. Gained hands-on experience with industrial applications of machine learning in manufacturing systems.Demonstrated strong collaboration, adaptability, and effective communication skills in a corporate environment.Demonstrated strong collaboration, adaptability, and effective communication skills in a corporate environment.",
+        "duration":"Sep 2024 – Nov 2024"
       },
       {
         "title":"BlackBuck",
-        "content": "The Project is designed to identify and eliminate redundant sentences in Hindi documents while ensuring that all essential information is preserved. It leverages SentenceBERT, a powerful transformer-based model trained on a translated STS (Semantic Textual Similarity) Benchmark dataset, to measure the semantic similarity between sentences. By analyzing sentence embeddings, the system accurately detects overlapping or repetitive content within a document. To achieve effective summarization, the system employs extractive, graph-based methods that analyze sentence relationships and structure. Using community detection algorithms, it identifies clusters of similar sentences, extracts the most representative ones, and removes redundancies without compromising key details. This approach ensures that the final summary retains maximum informational value while significantly reducing repetitive content, making it useful for tasks like document summarization, content refinement, and automatic text compression in Hindi-language processing."
+        "content": "Currently working as an intern in BlackBuck as a Backend developer."
       }
     ],
     "papers":[{
       "title":"Detecting Anomalous Self-Citations using Citation Network Analysis and LLMs",
-      "content":"Accurately evaluating research impact is crucial in academia, influencing funding, promo-tions, and recognition. However, excessive self-citations can distort citation metrics, undermining fairassessment. This study introduces a novel methodology to detect anomalous self-citations using citation network analysis and advanced Natural Language Processing with Large Language Models. A citation network is constructed from a large-scale academic dataset, where nodes represent papers and authors, and edges capture citation "}],
+      "content":"This research introduces a novel approach to identify and assess self-citations in academic literature using citation network analysis and Large Language Models (LLMs). A graph-based citation network is built to detect self-citation loops, and advanced NLP techniques are used to classify them as essential or non-essential. The method enhances the transparency of citation metrics by filtering out misleading self-citations, promoting fairness and integrity in academic evaluation. This work was published in EAAAI (Engineering Applications and Advances of Artificial Intelligence)."}],
   "education":["Bachelor’s Degree at PES   2021 - 2025   (GPA: 8.2/10.0)","Class 12th state Board    2019 - 2021  (88/100) ","Class 10th state Board    (81/100)"],
   "phone_number":"8105142720",
   "email":"bv.gaurav4@gmail.com",

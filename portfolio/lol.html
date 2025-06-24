@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Key Press Tracker</title>
+</head>
+<body>
+    <h1>Press any key!</h1>
+    <p id="output"></p>
+
+    <script>
+        document.addEventListener("keydown", function(event) {
+            document.getElementById("output").innerText = `Key Pressed: ${event.key}`;
+            console.log(`Key Pressed: ${event.key}`); // Logs to console
+        });
+
+        document.addEventListener("keyup", function(event) {
+            console.log(`Key Released: ${event.key}`); // Logs key release
+        });
+    </script>
+</body>
+</html>
