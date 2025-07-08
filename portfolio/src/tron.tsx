@@ -369,64 +369,7 @@ export default function Tron(){
             }
           }
         };
-
-        // ws.onmessage = (event) => {
-        //   var data = event.data
-        //   data=JSON.parse(event.data)
-        //   if(PlayerIdRef.current=="")
-        //   {
-        //     PlayerIdRef.current=data.main_message.player_id
-        //     stateRef.current=data.main_message.status
-        //     poolId.current=data.main_message.pool_id
-        //     colorRef.current=data.main_message.color
-        //   } else if (stateRef.current=="waiting"){
-        //     stateRef.current=data.main_message.status
-        //   }else{
-        //     if(data.position_list!=null)
-        //     {
-        //       var positions=data.position_list
-        //       Object.entries(positions).map(([playerId, pos]) => {
-        //         if(playerId !== PlayerIdRef.current){
-        //           const position = pos as { color: string; x: number; y: number; z: number; rx: number; ry: number; rz: number ,state:boolean};                  
-        //           if(accMap[playerId] == null || accMap[playerId] == undefined)
-        //           {
-                    
-        //             var model = tronBike("red");
-        //             model.position.set(0, 0, 0);
-
-        //             scene.add(model)
-        //             accMap[playerId] = model
-        //           }
-        //           accMap[playerId].position.set(position.x,position.y,position.z)
-        //           accMap[playerId].rotation.set(position.rx,position.ry,position.rz)
-        //           if(position.state){
-        //             const trail = playersTrails.current.get(playerId) || [];
-        //             trail.push(new THREE.Vector3(position.x, position.y, position.z));
-        //             if(trail.length == 200){
-        //               trail.splice(0,1);
-        //             }
-        //             playersTrails.current.set(playerId, trail);
-        //             updatePlayerWallMesh(trail,position.color,playerId)
-        //           }else{
-        //             if(!players[playerId])
-        //             {
-        //               const obj : {mesh : THREE.Mesh| null; body : CANNON.Body[]| null} = {mesh:null,body:null};
-        //               players[playerId] = obj;
-        //             }
-        //             if( players[playerId].body){
-        //               players[playerId].body?.forEach(box=>world.removeBody(box));
-        //               players[playerId].body.length=0
-        //             }
-        //             if( players[playerId].mesh){
-        //               players[playerId].mesh.geometry.dispose
-        //               scene.remove(players[playerId].mesh)
-        //             }
-        //           }
-
-        //         }
-        //       })
-        //     }
-        //   }};
+                
         ws.onerror = (error) => {
           console.error("WebSocket error:", error);
         };
