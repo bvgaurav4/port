@@ -2,8 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import './index.css'
-
+// import './index.css'
 import * as CANNON from 'cannon-es'
 import Stats from 'three/addons/libs/stats.module.js'
 
@@ -13,13 +12,13 @@ export default function Tron(){
   const loader = new GLTFLoader();
   const [ovals, setOvals] = useState<number[]>([1, 2, 3, 4]);
 
-  const [ovalBlue, setOvalBlue] = useState<number[]>([1, 2, 3, 4]);
-  const [ovalBYellow, setOvalYellow] = useState<number[]>([1, 2, 3, 4]);
+  // const [ovalBlue, setOvalBlue] = useState<number[]>([1, 2, 3, 4]);
+  // const [ovalBYellow, setOvalYellow] = useState<number[]>([1, 2, 3, 4]);
 
-    const [playerlifes, setLives] = useState<number[]>([1, 2, 3, 4]);
-    const lifesChange = ()=>{
-      setLives(prev => [...prev, 10]); 
-    }
+  //   const [playerlifes, setLives] = useState<number[]>([1, 2, 3, 4]);
+  //   const lifesChange = ()=>{
+  //     setLives(prev => [...prev, 10]); 
+  //   }
   let PlayerIdRef = useRef("")
   // let McModel = useRef<THREE.Group | null>(null);
   let McModel = useRef<THREE.Mesh | THREE.Group| null>(null);
@@ -27,11 +26,12 @@ export default function Tron(){
 
   let trailState = useRef(false)
   let playersTrails = useRef<Map<string, Array<THREE.Vector3> | null>>(new Map())
-  let stateRef = useRef("")
+  let stateRef = useRef("IDLE")
   let poolId = useRef("")
   let colorRef = useRef("")
   let isAlive = useRef(true)
   let players: { [key: string]: { mesh: THREE.Mesh | null; body?: CANNON.Body[] | null} } = {};
+
 
   let accMap: { [key: string]: any } = {};
   let yellowBike = useRef<THREE.Group | null>(null);
@@ -43,7 +43,7 @@ export default function Tron(){
 
   var playerTrailHitBox = new Array<CANNON.Body>();
   const acceleration=0.5;
-  let dAcc=0.0002
+  // let dAcc=0.0002
   let speed=0;
 
 
@@ -57,7 +57,8 @@ export default function Tron(){
 
     const handleClick = ()=>{
     setOvals(prev => [...prev, 1]);
-  }
+    }
+    
 
   loader.load('/assets/lightcycle.glb', (gltf) => {
     let model = gltf.scene;
@@ -181,7 +182,7 @@ export default function Tron(){
 
         const scene = new THREE.Scene()
 
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000)
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 200)
         camera.position.x=10
         camera.position.z=10
         camera.position.y=0
@@ -274,110 +275,113 @@ export default function Tron(){
 
 
         const ws = new WebSocket("ws://localhost:8080/play");
-        ws.onopen=()=>{
-          console.log("connected");
-        } 
-        ws.onclose = () => {
-          console.log("Disconnected from WebSocket ❌");
-        };
-        ws.onmessage = (event) => {
-
-          var data = event.data
-          if(data.length>0){
-            data=JSON.parse(event.data)
-            if(PlayerIdRef.current==""){
-
-              PlayerIdRef.current=data.main_message.player_id
-              stateRef.current = "idle";
-            
-            }else if(stateRef.current == "idle"){
-              stateRef.current=data.main_message.status
-            } else if (data.main_message == "waiting") {
-              stateRef.current=data.main_message.status
-              poolId.current=data.main_message.pool_id
-              colorRef.current=data.main_message.color
-            } else if (stateRef.current == "Starting") {
-              stateRef.current=data.main_message.status
-                if(data.position_list!=null) {
-
+        if(ws != null){
+          ws.onopen=()=>{
+            console.log("connected");
+          } 
+          ws.onclose = () => {
+            console.log("Disconnected from WebSocket ❌");
+          };
+          ws.onmessage = (event) => {
+  
+            var data = event.data
+            if(data.length>0){
+              data=JSON.parse(event.data)
+              if(PlayerIdRef.current==""){
+  
+                PlayerIdRef.current=data.main_message.player_id
+                stateRef.current = "idle";
+              
+              }else if(stateRef.current == "idle"){
+                stateRef.current=data.main_message.status
+              } else if (data.main_message == "waiting") {
+                stateRef.current=data.main_message.status
+                poolId.current=data.main_message.pool_id
+                colorRef.current=data.main_message.color
+              } else if (stateRef.current == "Starting") {
+                stateRef.current=data.main_message.status
+                  if(data.position_list!=null) {
+  
+                    var positions=data.position_list
+                    Object.entries(positions).map(([playerId, pos]) => {
+  
+                      if(playerId !== PlayerIdRef.current){
+                        
+                        const position = pos as { color: string; x: number; y: number; z: number; rx: number; ry: number; rz: number ,state:boolean, alive : boolean};                  
+                        
+                        if(accMap[playerId] == null || accMap[playerId] == undefined) {
+                          var model = tronBike("red");
+                          scene.add(model)
+                          accMap[playerId] = model
+                        }
+                        accMap[playerId].position.set(position.x,position.y,position.z)
+                        accMap[playerId].rotation.set(position.rx,position.ry,position.rz)
+                      }})
+                      
+                  }
+              }else if (stateRef.current == "Playing") {
+                if(data.position_list!=null)
+                {
                   var positions=data.position_list
                   Object.entries(positions).map(([playerId, pos]) => {
-
                     if(playerId !== PlayerIdRef.current){
-                      
-                      const position = pos as { color: string; x: number; y: number; z: number; rx: number; ry: number; rz: number ,state:boolean, alive : boolean};                  
-                      
-                      if(accMap[playerId] == null || accMap[playerId] == undefined) {
+                      const position = pos as { color: string; x: number; y: number; z: number; rx: number; ry: number; rz: number ,state:boolean,alive : boolean};                  
+                      if(accMap[playerId] == null || accMap[playerId] == undefined)
+                      {
+                        
                         var model = tronBike("red");
+                        model.position.set(0, 0, 0);
+  
                         scene.add(model)
                         accMap[playerId] = model
                       }
                       accMap[playerId].position.set(position.x,position.y,position.z)
                       accMap[playerId].rotation.set(position.rx,position.ry,position.rz)
-                    }})
-                    
+  
+                      if(position.state){
+                        const trail = playersTrails.current.get(playerId) || [];
+                        trail.push(new THREE.Vector3(position.x, position.y, position.z));
+  
+                        if(trail.length == 200){
+                          trail.splice(0,1);
+                        }
+                        playersTrails.current.set(playerId, trail);
+                        updatePlayerWallMesh(trail,position.color,playerId)
+  
+                      }else{
+  
+                        if(!players[playerId]){
+                          const obj : {mesh : THREE.Mesh| null; body : CANNON.Body[]| null} = {mesh:null,body:null};
+                          players[playerId] = obj;
+                        }
+  
+                        if( players[playerId].body){
+                          players[playerId].body?.forEach(box=>world.removeBody(box));
+                          players[playerId].body.length=0
+                        }
+  
+                        if( players[playerId].mesh){
+                          players[playerId].mesh.geometry.dispose
+                          scene.remove(players[playerId].mesh)
+                        }
+                      }
+                    }
+                  })
                 }
-            }else if (stateRef.current == "Playing") {
-              if(data.position_list!=null)
-              {
-                var positions=data.position_list
-                Object.entries(positions).map(([playerId, pos]) => {
-                  if(playerId !== PlayerIdRef.current){
-                    const position = pos as { color: string; x: number; y: number; z: number; rx: number; ry: number; rz: number ,state:boolean,alive : boolean};                  
-                    if(accMap[playerId] == null || accMap[playerId] == undefined)
-                    {
-                      
-                      var model = tronBike("red");
-                      model.position.set(0, 0, 0);
-
-                      scene.add(model)
-                      accMap[playerId] = model
-                    }
-                    accMap[playerId].position.set(position.x,position.y,position.z)
-                    accMap[playerId].rotation.set(position.rx,position.ry,position.rz)
-
-                    if(position.state){
-                      const trail = playersTrails.current.get(playerId) || [];
-                      trail.push(new THREE.Vector3(position.x, position.y, position.z));
-
-                      if(trail.length == 200){
-                        trail.splice(0,1);
-                      }
-                      playersTrails.current.set(playerId, trail);
-                      updatePlayerWallMesh(trail,position.color,playerId)
-
-                    }else{
-
-                      if(!players[playerId]){
-                        const obj : {mesh : THREE.Mesh| null; body : CANNON.Body[]| null} = {mesh:null,body:null};
-                        players[playerId] = obj;
-                      }
-
-                      if( players[playerId].body){
-                        players[playerId].body?.forEach(box=>world.removeBody(box));
-                        players[playerId].body.length=0
-                      }
-
-                      if( players[playerId].mesh){
-                        players[playerId].mesh.geometry.dispose
-                        scene.remove(players[playerId].mesh)
-                      }
-                    }
-                  }
-                })
               }
             }
-          }
-        };
-                
-        ws.onerror = (error) => {
-          console.error("WebSocket error:", error);
-        };
+          };
+                  
+          ws.onerror = (error) => {
+            console.error("WebSocket error:", error);
+          };
+        }
         const stats = new Stats()
         document.body.appendChild(stats.dom)
-
+        console.log(window.innerWidth,window.innerHeight)
 
         const animate = () => {
+          console.log(stateRef.current)
           requestAnimationFrame(animate);
           const delta = clock.getDelta()
           world.step(1 / 60, delta)
@@ -485,7 +489,7 @@ export default function Tron(){
           if(stateRef.current == "Playing"){
             if(McModel.current && McModel.current.position)
             {
-              var message: { x: number ,y: number,z: number,rx: number,ry: number,rz: number,state :boolean, color :string , alive :boolean} = { x: 0,y :0,z:0,rx:0, ry:0,rz:0 , state:false,color:"white",alive:false};
+              var message: { x: number ,y: number,z: number,rx: number,ry: number,rz: number,state :boolean, color :string , alive :boolean} = { x: 0,y :0,z:0,rx:0, ry:0,rz:0 , state:false,color:"white",alive:true};
               
               message.x = McModel.current.position.x
               message.y = McModel.current.position.y
@@ -496,6 +500,7 @@ export default function Tron(){
               message.state = trailState.current
               message.color = colorRef.current
               message.alive = isAlive.current
+              console.log(message)
 
               var playerMessage : {player_id:string ,pool_id:string,status:string ,position:any } = {player_id:"",status:"",position:{},pool_id:""} 
 
@@ -503,12 +508,14 @@ export default function Tron(){
               playerMessage.pool_id= poolId.current
               playerMessage.status=stateRef.current
               playerMessage.position = message
-              ws.send(JSON.stringify(playerMessage))
+              if(ws!=null){
+                ws.send(JSON.stringify(playerMessage))
+              }
             }
           }
 
 
-          if(stateRef.current=="end"){
+          if(stateRef.current=="END"){
             // stateRef
           }
           renderer.render(scene, camera)
@@ -528,8 +535,8 @@ export default function Tron(){
       <div ref={mountRef} />
       <div style={{
         position: 'absolute',
-        top: 600,
-        right: 1500,
+        top: window.innerHeight-200,
+        right:window.innerWidth-250,
         backgroundColor: 'rgba(0, 0, 0, 0.7)',
         padding: '15px',
         borderRadius: '8px',
@@ -539,7 +546,7 @@ export default function Tron(){
         flexDirection: 'column',
         gap: '10px',
         minWidth: '200px'
-      }}>
+        }}>
           <div style={{ marginBottom: '10px' }}>
           <h3 style={{ margin: '0 0 10px 0' }}>Controls</h3>
           <p style={{ margin: '0 0 5px 0' }}>W/↑: Accelerate</p>
@@ -547,7 +554,7 @@ export default function Tron(){
           <p style={{ margin: '0 0 5px 0' }}>A/←: Turn Left</p>
           <p style={{ margin: '0 0 5px 0' }}>D/→: Turn Right</p>
           <p style={{ margin: '0' }}>Space: Toggle Trail</p>
-        </div>
+      </div>
       </div>
       <div style={{
         position: 'absolute',
@@ -640,6 +647,16 @@ export default function Tron(){
             fontFamily: 'monospace'
           }}  onClick={handleClick}>Exit</button>
         </div>
+        <input></input>
+            <button style={{
+            backgroundColor: '#00ff00',
+            color: 'black',
+            border: 'none',
+            padding: '8px',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontFamily: 'monospace'
+          }}>Url to connect</button>
       </div>
     </div>
   )

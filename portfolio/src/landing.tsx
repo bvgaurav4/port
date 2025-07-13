@@ -5,8 +5,12 @@ import './index.css'
 
 export default function Landing() {
   const navigate = useNavigate();
+  ///https://geolocation-db.com/json/
   const mainPage=()=>{
   navigate("/bv.gaurav");
+
+
+  
   }
   return (
     <MantineProvider theme={{ fontFamily: 'Open Sans' }} withGlobalStyles withNormalizeCSS>

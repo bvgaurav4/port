@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import jsonString from "/assets/projects.txt?raw"
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -12,8 +12,10 @@ import './index.css'
 
 
 export default function Lays() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const [sounds,setSounds] = useState<THREE.Audio | null>(null)
   const mainPage=()=>{
+    sounds?.stop()
   navigate("/tron");
   }
   const mountRef = useRef<HTMLDivElement>(null)
@@ -68,7 +70,7 @@ export default function Lays() {
     const l2=new THREE.AmbientLight(0xffffff, 1)
     scene.add(l2);
 
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000)
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 800)
     camera.position.setX(150*Math.cos(2*5*Math.PI/6)+5)
     camera.position.setZ(150*Math.sin(2*5*Math.PI/6)+5)
     camera.position.setY(35)
@@ -78,9 +80,9 @@ export default function Lays() {
     const point2=new THREE.Vector3(0,400,0)
     const control=new THREE.Vector3(0,35,155)
 
-    const a=750
+    const a=600
     const box = new THREE.Mesh(
-      new THREE.BoxGeometry(a, a, a,32,32,32),
+      new THREE.BoxGeometry(a, a, a,5,5,5),
       new THREE.MeshNormalMaterial({wireframe:true}));
     const hole= new THREE.Mesh(
       new THREE.SphereGeometry(a*0.65,64,64,64),
@@ -338,7 +340,7 @@ export default function Lays() {
       }
     }
     const orbit = new OrbitControls(camera, renderer.domElement)
-    const grid = new THREE.GridHelper(1000, 100)
+    const grid = new THREE.GridHelper(1000, 50)
     scene.add(grid)
     orbit.enableDamping = false; 
     orbit.dampingFactor = 1;
@@ -347,11 +349,10 @@ export default function Lays() {
     const colors=[0x00ff00,0xffff00,0xFfa000,0xff0000,0xff00ff]
     var rr=130;
     var freq: THREE.MeshBasicMaterial[][] = Array.from({ length: 8 }, () => []);
-    for(var j=0;j<10;j++)
-    { 
+    for(var j=0;j<10;j++){ 
       var a2=-Math.PI/2;
       for(let i = 0; i < 16;i++){
-        const boxGeometry = new THREE.BoxGeometry(rr*Math.PI/10, 5, 10, 20, 20, 1); 
+        const boxGeometry = new THREE.BoxGeometry(rr*Math.PI/10, 5, 10, 5, 5, 5); 
         const positionAttribute = boxGeometry.attributes.position;
         for (let i = 0; i < positionAttribute.count; i++) {
           const x = positionAttribute.getX(i);
@@ -563,7 +564,7 @@ export default function Lays() {
     } );
 
             
-    //180 degrees
+    // //180 degrees
     loader.load( '/assets/arcade_machine__automaping (1).glb', function ( gltf ) {
       const model = gltf.scene
 
@@ -756,49 +757,47 @@ export default function Lays() {
     } );
 
     //making flight path
-    function flight_path(){
-      const    [x,y,z]=Array(3).fill(null).map(()=> THREE.MathUtils.randFloatSpread(1000));
-      return new THREE.Vector3(x,10+Math.abs(y),z);
-    }
-    var lol_flight_path =Array(10).fill(null).map(flight_path)
-    lol_flight_path.push(lol_flight_path[0]);
-    const path = new THREE.CatmullRomCurve3(lol_flight_path);
-
-    // Sword fish
-    loader.load(' /assets/swordfish_ll.glb', function (gltf) {
-      const model = gltf.scene;
+    // function flight_path(){
+    //   const    [x,y,z]=Array(3).fill(null).map(()=> THREE.MathUtils.randFloatSpread(1000));
+    //   return new THREE.Vector3(x,10+Math.abs(y),z);
+    // }
+    // var lol_flight_path =Array(10).fill(null).map(flight_path)
+    // lol_flight_path.push(lol_flight_path[0]);
+    // // Sword fish
+    // loader.load(' /assets/swordfish_ll.glb', function (gltf) {
+    //   const model = gltf.scene;
       
-      model.scale.set(200, 200, 200);
-      model.position.set(10, 0, 0);
-      scene.add(model);
-      let progress = 0; 
-      const speed = 0.0005; 
+    //   model.scale.set(200, 200, 200);
+    //   model.position.set(10, 0, 0);
+    //   scene.add(model);
+    //   let progress = 0; 
+    //   const speed = 0.0005; 
 
 
-      function animate() {
-        progress += speed; 
-        if (progress > 1) progress = 0; 
-        const position = path.getPointAt(progress); 
-        model.position.copy(position);
+    //   function animate() {
+    //     progress += speed; 
+    //     if (progress > 1) progress = 0; 
+    //     const position = path.getPointAt(progress); 
+    //     model.position.copy(position);
       
-        const tangent = path.getTangentAt(progress);
-        model.rotation.y = Math.atan2(tangent.x, tangent.z);
-        // console.log(tangent.x,tangent.z);
-        // model.rotation.y= Math.atan2(tangent.x, tangent.z);
-        // model.rotation.x=(-Math.atan(tangent.y));
-        // model.rotation.y=(Math.atan(tangent.x));
-        model.rotation.z=(Math.atan(tangent.x));
-        model.rotation.y =Math.atan2(tangent.x, tangent.z);
+    //     const tangent = path.getTangentAt(progress);
+    //     model.rotation.y = Math.atan2(tangent.x, tangent.z);
+    //     // console.log(tangent.x,tangent.z);
+    //     // model.rotation.y= Math.atan2(tangent.x, tangent.z);
+    //     // model.rotation.x=(-Math.atan(tangent.y));
+    //     // model.rotation.y=(Math.atan(tangent.x));
+    //     model.rotation.z=(Math.atan(tangent.x));
+    //     model.rotation.y =Math.atan2(tangent.x, tangent.z);
 
-        renderer.render(scene, camera);
+    //     renderer.render(scene, camera);
 
-        requestAnimationFrame(animate);
-      }
-      animate();
+    //     requestAnimationFrame(animate);
+    //   }
+    //   animate();
 
-    }, undefined, function (error) {
-      console.error(error);
-    });
+    // }, undefined, function (error) {
+    //   console.error(error);
+    // });
         
     const sphere= new THREE.SphereGeometry(0.25,24,24)
     const sphere_mesh=new THREE.MeshStandardMaterial({color:0xffffff})
@@ -811,6 +810,22 @@ export default function Lays() {
         scene.add(star)
     }
     Array(1000).fill(null).forEach(add_starts)
+
+    // const sphere = new THREE.SphereGeometry(0.5, 16, 16);
+//     const material = new THREE.MeshStandardMaterial({ color: 0xffffff });
+//     const count = 1000;
+
+//     const instancedStars = new THREE.InstancedMesh(sphere, material, count);
+
+//     for (let i = 0; i < count; i++) {
+//       const [x, y, z] = Array(3).fill().map(() => THREE.MathUtils.randFloatSpread(750));
+//       const dummy = new THREE.Object3D();
+//       dummy.position.set(x, Math.abs(y), z);
+//       dummy.updateMatrix();
+//         instancedStars.setMatrixAt(i, dummy.matrix);
+//       }
+
+// scene.add(instancedStars);
         
     const listener = new THREE.AudioListener();
     camera.add( listener );
@@ -820,6 +835,7 @@ export default function Lays() {
     const audioLoader = new THREE.AudioLoader();
     audioLoader.load( '/assets/Doin it Right (Official Audio).mp3', function( buffer ) {
       sound.setBuffer( buffer );
+      setSounds(sound)
       sound.setLoop(true);
       sound.setVolume(0.9);
       sound.play();
@@ -831,7 +847,7 @@ export default function Lays() {
 
 
     let progress = 0; 
-    const speed = 0.005;
+    const speed = 0.0075;
     const animate = () => {
       daftMesh.rotation.y += 0.013
       base.rotation.x+=0.001
