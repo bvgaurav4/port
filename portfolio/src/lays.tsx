@@ -70,7 +70,7 @@ export default function Lays() {
     const l2=new THREE.AmbientLight(0xffffff, 1)
     scene.add(l2);
 
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 800)
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1500)
     camera.position.setX(150*Math.cos(2*5*Math.PI/6)+5)
     camera.position.setZ(150*Math.sin(2*5*Math.PI/6)+5)
     camera.position.setY(35)
@@ -273,7 +273,7 @@ export default function Lays() {
     })
     const daftMesh = new THREE.Mesh(daft, daftMaterial)
     daftMesh.position.set(0, -20, 0);
-    // scene.add(daftMesh)
+    scene.add(daftMesh)
     const dist=(p1: THREE.Vector3 ,p2:THREE.Vector3,src : THREE.Vector3 )=>{
       p1.distanceTo(p2)
       if(src.distanceTo(p1)<src.distanceTo(p2))
@@ -363,7 +363,7 @@ export default function Lays() {
           boxGeometry.attributes.position.needsUpdate = true;
           const material2 = new THREE.MeshBasicMaterial( {color: colors[Math.floor(j / 2)]} )
           const bentBox = new THREE.Mesh(boxGeometry, material2);
-          // scene.add(bentBox);
+          scene.add(bentBox);
           freq[i%8].push(material2);
           bentBox.position.set(0,-15,0);
           bentBox.position.x=rr*Math.cos(i*Math.PI/8);
@@ -764,7 +764,7 @@ export default function Lays() {
     // THREE.CurvePath
     var lol_flight_path =Array(10).fill(null).map(flight_path)
     lol_flight_path.push(lol_flight_path[0]);
-    var path = new THREE.QuadraticBezierCurve3(new THREE.Vector3(0,0,0))
+    const path = new THREE.CatmullRomCurve3(lol_flight_path);
 
       const    [x,y,z]=Array(3).fill(null).map(()=> THREE.MathUtils.randFloatSpread(1000));
     // Sword fish
@@ -778,26 +778,26 @@ export default function Lays() {
       const speed = 0.0005; 
 
 
-      // function animate() {
-      //   progress += speed; 
-      //   if (progress > 1) progress = 0; 
-      //   const position = path.getPointAt(progress); 
-      //   model.position.copy(position);
+      function animate() {
+        progress += speed; 
+        if (progress > 1) progress = 0; 
+        const position = path.getPointAt(progress); 
+        model.position.copy(position);
       
-      //   const tangent = path.getTangentAt(progress);
-      //   model.rotation.y = Math.atan2(tangent.x, tangent.z);
-      //   // console.log(tangent.x,tangent.z);
-      //   // model.rotation.y= Math.atan2(tangent.x, tangent.z);
-      //   // model.rotation.x=(-Math.atan(tangent.y));
-      //   // model.rotation.y=(Math.atan(tangent.x));
-      //   model.rotation.z=(Math.atan(tangent.x));
-      //   model.rotation.y =Math.atan2(tangent.x, tangent.z);
+        const tangent = path.getTangentAt(progress);
+        model.rotation.y = Math.atan2(tangent.x, tangent.z);
+        // console.log(tangent.x,tangent.z);
+        // model.rotation.y= Math.atan2(tangent.x, tangent.z);
+        // model.rotation.x=(-Math.atan(tangent.y));
+        // model.rotation.y=(Math.atan(tangent.x));
+        model.rotation.z=(Math.atan(tangent.x));
+        model.rotation.y =Math.atan2(tangent.x, tangent.z);
 
-      //   renderer.render(scene, camera);
+        renderer.render(scene, camera);
 
-      //   requestAnimationFrame(animate);
-      // }
-      // animate();
+        requestAnimationFrame(animate);
+      }
+      animate();
 
     }, undefined, function (error) {
       console.error(error);
