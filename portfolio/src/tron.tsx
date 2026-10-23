@@ -52,7 +52,7 @@ export default function Tron(){
   let blueBikeArray = Array<THREE.Group>();
 
 
-  const maxSpeed=20
+  const maxSpeed=5
 
 
     const handleClick = ()=>{
@@ -182,7 +182,7 @@ export default function Tron(){
 
         const scene = new THREE.Scene()
 
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 200)
+        const camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 1500)
         camera.position.x=10
         camera.position.z=10
         camera.position.y=0
@@ -192,7 +192,7 @@ export default function Tron(){
         const l2=new THREE.AmbientLight(0xffffff, 1)
         scene.add(l2);
 
-        const grid = new THREE.GridHelper(1000, 100)
+        const grid = new THREE.GridHelper(1000, 1000)
         scene.add(grid)
 
       
@@ -423,10 +423,10 @@ export default function Tron(){
             //   McModel.current.rotation.y+=Math.PI/2
             // }
             McModel.current.rotation.z-=tilt
-            var r=10
+            var r=5
             var x = r * Math.sin(angleY)
             var z = r * Math.cos(angleY)
-            camera.position.set(McModel.current.position.x-x,5,McModel.current.position.z-z) 
+            camera.position.set(McModel.current.position.x-x,2,McModel.current.position.z-z) 
             camera.lookAt(McModel.current.position);  
 
             const up = new THREE.Vector3(0, 1, 0);

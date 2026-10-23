@@ -70,7 +70,17 @@ export default function Lays() {
     const l2=new THREE.AmbientLight(0xffffff, 1)
     scene.add(l2);
 
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1500)
+    const camera = new THREE.PerspectiveCamera(179, window.innerWidth / window.innerHeight, 0.1, 1500)
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+//     const camera = new THREE.OrthographicCamera(
+//     -width / 4,
+//      width / 4,
+//      height / 4,
+//     -height / 4,
+//     0.2,
+//     5000
+// );
     camera.position.setX(150*Math.cos(2*5*Math.PI/6)+5)
     camera.position.setZ(150*Math.sin(2*5*Math.PI/6)+5)
     camera.position.setY(35)
@@ -340,7 +350,7 @@ export default function Lays() {
       }
     }
     const orbit = new OrbitControls(camera, renderer.domElement)
-    const grid = new THREE.GridHelper(1000, 50)
+    const grid = new THREE.GridHelper(10000, 100)
     scene.add(grid)
     orbit.enableDamping = false; 
     orbit.dampingFactor = 1;
