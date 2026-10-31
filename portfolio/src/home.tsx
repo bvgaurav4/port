@@ -1,186 +1,131 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef } from 'react'
 // import * as THREE from 'three'
 // import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 // import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import './index.css'
+import ControlsPanel from './ControlsPanel'
+import EdgePanel from './edgePannel'
+import HorizontalEdgePanel from './HorizontalEdges'
+
 // import * as CANNON from 'cannon-es'
 // import Stats from 'three/addons/libs/stats.module.js'
+
+type ClipUnit = 'px' | '%'
+type ClipPoint = readonly [number, number]
+
+const toPolygon = (points: readonly ClipPoint[], unit: ClipUnit = '%') =>
+    `polygon(${points.map(([x, y]) => `${x}${unit} ${y}${unit}`).join(', ')})`
+
+type CornerCuts = {
+    topLeft?: number
+    topRight?: number
+    bottomRight?: number
+    bottomLeft?: number
+}
+
+const chamferedRect = (
+    { topLeft = 0, topRight = 0, bottomRight = 0, bottomLeft = 0 }: CornerCuts = {},
+    unit: ClipUnit = '%',
+) => {
+    const points: ClipPoint[] = [[topLeft, 0]]
+    points.push(topRight ? [100 - topRight, 0] : [100, 0])
+    if (topRight) points.push([100, topRight])
+    points.push(bottomRight ? [100, 100 - bottomRight] : [100, 100])
+    if (bottomRight) points.push([100 - bottomRight, 100])
+    points.push(bottomLeft ? [bottomLeft, 100] : [0, 100])
+    if (bottomLeft) points.push([0, 100 - bottomLeft])
+    if (topLeft) points.push([0, topLeft])
+    return toPolygon(points, unit)
+}
+
+const CUT = 100
+const PANEL_WIDTH = 1200
+const LEAD = (150 / PANEL_WIDTH) * 100
+const SLANT_LEFT = 14
+const SLANT_RIGHT = 87
+
+const PANEL_SIZE = {
+    controls: { width: '450px', height: '300px' },
+    edge: { width: '150px', height: '530px' },
+    horizontal: { width: `${PANEL_WIDTH}px`, height: '85px' },
+}
+
+const clips = {
+    controlsBottomLeft: chamferedRect({ topRight: CUT }),
+    edgeLeft: chamferedRect(),
+    edgeRight: chamferedRect(),
+    horizontalBottomRight: toPolygon([
+        [0, 0], [0, 0], [100, 0], [SLANT_RIGHT, 100], [100, 100], [SLANT_LEFT, 100],
+    ]),
+    horizontalTopRight: toPolygon([
+        [LEAD, 0], [0, 0], [SLANT_RIGHT, 0], [100, 100], [100, 100], [0, 100],
+    ]),
+    controlsBottomRight: toPolygon([
+        [0, 0], [0, 0], [0, 100], [100, 100], [100, 0], [0, 100],
+    ]),
+    controlsTopRight: chamferedRect({ bottomLeft: CUT }),
+    controlsTopLeft: chamferedRect({ bottomRight: CUT }),
+}
 
 export default function Home(){
 
     const mountRef = useRef<HTMLDivElement>(null)
-    const [ovals, setOvals] = useState<number[]>([1, 2, 3, 4]);
-    console.log("load ing somthins")
-    const handleClick = ()=>{
-        setOvals(prev => [...prev, 1]);
-    }
 
     return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
       <div ref={mountRef} style={{ position: 'absolute', inset: 0 }} />
-        <div
-          style={{
-            position: 'absolute',
-            bottom:5,
-            left: 5,
-            backgroundColor: 'rgba(0, 10, 5, 0.85)',
-            padding: '10px 24px',
-            color: '#00ff88',
-            fontFamily: 'monospace',
-            minWidth: '600px',
-            minHeight: '300px',
-            // Custom shape
-            clipPath:
-              'polygon(0 0px, 0px 0, 100% calc(100% - 0px), 100% calc(100% - 0px), calc(100% - 0px) 100%, 0 100%)',
+        <ControlsPanel
+          {...PANEL_SIZE.controls}
+          placement={{ bottom: 5, left: 5 }}
+          clipPath={clips.controlsBottomLeft}
+        />
 
-            borderLeft: '2px solid #00ff88',
-            borderBottom: '2px solid #00ff88',
-            borderRight: '2px solid #00ff88',
-            borderTop: '2px solid #00ff88',
-          }}
-        >
-          <h3
-            style={{
-              margin: '0 0 15px',
-              letterSpacing: '3px',
-              borderBottom: '1px solid #00ff8855',
-              paddingBottom: '10px',
-            }}
-          >
-            CONTROLS
-          </h3>
 
-          <p>W / ↑ : Accelerate</p>
-          <p>S / ↓ : Brake</p>
-          <p>A / ← : Turn Left</p>
-          <p>D / → : Turn Right</p>
-          <p>SPACE : Toggle Trail</p>
-        </div>
+        <EdgePanel
+          {...PANEL_SIZE.edge}
+          placement={{ bottom: 200, left: 5 }}
+          clipPath={clips.edgeLeft}
+        />
+
+
+        <EdgePanel
+          {...PANEL_SIZE.edge}
+          placement={{ bottom: 200, right: 5 }}
+          clipPath={clips.edgeRight}
+        />
 
 
 
-                    <div
-          style={{
-            position: 'absolute',
-            bottom:5,
-            right: 5,
-            backgroundColor: 'rgba(0, 10, 5, 0.85)',
-            padding: '10px 24px',
-            color: '#00ff88',
-            fontFamily: 'monospace',
-            minWidth: '600px',
-            minHeight: '300px',
-            // Custom shape
-            clipPath:
-              'polygon(0 0px, 0px 0, 0% calc(100% - 0%), 100% calc(100% - 0px), calc(100% - 0px) 0%, 0 100%)',
+        <HorizontalEdgePanel
+          {...PANEL_SIZE.horizontal}
+          placement={{ bottom: 5, right: 335 }}
+          clipPath={clips.horizontalBottomRight}
+        />
 
-            borderLeft: '2px solid #00ff88',
-            borderBottom: '2px solid #00ff88',
-            borderRight: '2px solid #00ff88',
-            borderTop: '2px solid #00ff88',
-          }}
-        >
-          <h3
-            style={{
-              margin: '0 0 15px',
-              letterSpacing: '3px',
-              borderBottom: '1px solid #00ff8855',
-              paddingBottom: '10px',
-            }}
-          >
-            CONTROLS
-          </h3>
+        <HorizontalEdgePanel
+          {...PANEL_SIZE.horizontal}
+          title='Play'
+          placement={{ top: 5, right: 335 }}
+          clipPath={clips.horizontalTopRight}
+        />
 
-          <p>W / ↑ : Accelerate</p>
-          <p>S / ↓ : Brake</p>
-          <p>A / ← : Turn Left</p>
-          <p>D / → : Turn Right</p>
-          <p>SPACE : Toggle Trail</p>
-        </div>
+        <ControlsPanel
+          {...PANEL_SIZE.controls}
+          placement={{ bottom: 5, right: 5 }}
+          clipPath={clips.controlsBottomRight}
+        />
 
+        <ControlsPanel
+          {...PANEL_SIZE.controls}
+          placement={{ top: 5, right: 5 }}
+          clipPath={clips.controlsTopRight}
+        />
 
-
-
-
-
-        <div
-          style={{
-            position: 'absolute',
-            top:5,
-            right: 5,
-            backgroundColor: 'rgba(0, 10, 5, 0.85)',
-            padding: '10px 24px',
-            color: '#00ff88',
-            fontFamily: 'monospace',
-            minWidth: '600px',
-            minHeight: '300px',
-            // Custom shape
-            clipPath:
-              'polygon(0 0px, 0px 0, 100% calc(100% - 0px), 100% calc(100% - 0%), calc(100% - 0%) 0%, 100% 0%)',
-
-            borderLeft: '2px solid #00ff88',
-            borderBottom: '2px solid #00ff88',
-            borderRight: '2px solid #00ff88',
-            borderTop: '2px solid #00ff88',
-          }}
-        >
-          <h3
-            style={{
-              margin: '0 0 15px',
-              letterSpacing: '3px',
-              borderBottom: '1px solid #00ff8855',
-              paddingBottom: '10px',
-            }}
-          >
-            CONTROLS
-          </h3>
-
-          <p>W / ↑ : Accelerate</p>
-          <p>S / ↓ : Brake</p>
-          <p>A / ← : Turn Left</p>
-          <p>D / → : Turn Right</p>
-          <p>SPACE : Toggle Trail</p>
-        </div>
-
-
-        <div
-          style={{
-            position: 'absolute',
-            top:5,
-            left: 5,
-            backgroundColor: 'rgba(0, 10, 5, 0.85)',
-            padding: '10px 24px',
-            color: '#00ff88',
-            fontFamily: 'monospace',
-            minWidth: '600px',
-            minHeight: '300px',
-            // Custom shape
-            clipPath:
-              'polygon(0 0px, 0px 0, 100% 0, 100% calc(100% - 100%), calc(100% - 100%) 100%, 0 100%)',
-
-            borderLeft: '2px solid #00ff88',
-            borderBottom: '2px solid #00ff88',
-            borderRight: '2px solid #00ff88',
-            borderTop: '2px solid #00ff88',
-          }}
-        >
-          <h3
-            style={{
-              margin: '0 0 15px',
-              letterSpacing: '3px',
-              borderBottom: '1px solid #00ff8855',
-              paddingBottom: '10px',
-            }}
-          >
-            CONTROLS
-          </h3>
-
-          <p>W / ↑ : Accelerate</p>
-          <p>S / ↓ : Brake</p>
-          <p>A / ← : Turn Left</p>
-          <p>D / → : Turn Right</p>
-          <p>SPACE : Toggle Trail</p>
-        </div>
+        <ControlsPanel
+          {...PANEL_SIZE.controls}
+          placement={{ top: 5, left: 5 }}
+          clipPath={clips.controlsTopLeft}
+        />
     </div>
   );
 }
