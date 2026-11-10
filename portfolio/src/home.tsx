@@ -198,9 +198,11 @@ export default function Home(){
             console.log(pilBody.position)
             capsule.position.copy(pilBody.position as any)
             var r=10
-            var x = r * Math.sin(angleX)
-            var z = r * Math.cos(angleX)
-            camera.position.set(capsule.position.x-r,capsule.position.y-r,capsule.position.z-r) 
+            
+            var x = r * Math.sin(yaw)
+            var z = r * Math.cos(yaw)
+            var y = r * -Math.sin(pitch)
+            camera.position.set(capsule.position.x+x,capsule.position.y+y,capsule.position.z+z) 
             renderer.render(scene, camera);
 
             
