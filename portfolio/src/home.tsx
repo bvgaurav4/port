@@ -111,21 +111,21 @@ export default function Home(){
           })
 
           const clock = new THREE.Clock()
-          const groundMaterial = new CANNON.Material({
-            friction:0.4,
-            restitution:0
-          });
+          // const groundMaterial = new CANNON.Material({
+          //   friction:0.4,
+          //   restitution:0
+          // });
 
-          const groundBody = new CANNON.Body({
-            type: CANNON.Body.STATIC,
-            shape: new CANNON.Plane(),
-            position : new CANNON.Vec3(0,0,0),
-            material:groundMaterial
-          })
-          world.addBody(groundBody)
+          // const groundBody = new CANNON.Body({
+          //   type: CANNON.Body.STATIC,
+          //   shape: new CANNON.Plane(),
+          //   position : new CANNON.Vec3(0,0,0),
+          //   material:groundMaterial
+          // })
+          // world.addBody(groundBody)
 
           const pilBody = hitBox()
-          const geometry = new THREE.CapsuleGeometry( 1, 10, 8, 8 );
+          const geometry = new THREE.CapsuleGeometry( 1, 5, 8, 8 );
           const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
           const capsule = new THREE.Mesh( geometry, material );
           // capsule.rotation.z +=Math.PI/2
@@ -192,16 +192,17 @@ export default function Home(){
             euler.setFromQuaternion(capsule.quaternion, 'YXZ');
             const angleX = euler.x;
             const angleY = euler.y;
-            pilBody.velocity.x = speed*10*Math.cos(angleY)
+            pilBody.velocity.x = -speed*10*Math.sin(angleY)
+            pilBody.velocity.z = -speed*10*Math.cos(angleY)
             pilBody.velocity.y = speed*10*Math.sin(angleX)
-            pilBody.velocity.z = speed*10*Math.sin(angleY)
             console.log(pilBody.position)
             capsule.position.copy(pilBody.position as any)
-            var r=10
             
+            
+            var r=15
             var x = r * Math.sin(yaw)
             var z = r * Math.cos(yaw)
-            var y = r * -Math.sin(pitch)
+            var y = -(r * Math.sin(pitch))
             camera.position.set(capsule.position.x+x,capsule.position.y+y,capsule.position.z+z) 
             renderer.render(scene, camera);
 
